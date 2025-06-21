@@ -1,0 +1,8 @@
+21-6-2025
+tested by Oajas Bhagwat , Anuj choundaj 
+
+1)The program is able to show battery voltage 
+
+2)This program is able to display resistance value and current value correctly.
+
+3)SD ok is forced in this program 
