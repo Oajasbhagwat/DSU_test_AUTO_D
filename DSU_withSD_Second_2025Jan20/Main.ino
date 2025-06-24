@@ -81,11 +81,11 @@ Serial.println("SR12----");
      
      //  /*
   Serial.println("SR13---");
-       SD_ok==1; Serial.println("---SD forced to be OK for testing -----");
+       SD_ok==1; Serial.println("---SD 1.2 forced to OK -----");
        lcd1.setCursor(0, 0);
   lcd1.print("Anvic systems ");
   lcd1.setCursor(0, 1);
-  lcd1.print("-SD forced OK--");
+  lcd1.print("-SD 1.1 forced OK--");
       //    
       /*
   if(!SD.begin(SDC_CS_PIN) ) 
