@@ -81,7 +81,7 @@ Serial.println("SR12----");
      
      //  /*
   Serial.println("SR13---");
-       SD_ok==1; Serial.println("---SD forced to be OK-----");
+       SD_ok==1; Serial.println("---SD forced to be OK for testing -----");
        lcd1.setCursor(0, 0);
   lcd1.print("Anvic systems ");
   lcd1.setCursor(0, 1);
