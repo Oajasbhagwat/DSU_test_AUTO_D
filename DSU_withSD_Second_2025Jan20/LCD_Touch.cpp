@@ -227,17 +227,6 @@ void A4_Init() {
   in_Byte = 0;  //j2- no. of bits,j3 - no.of bytes, D22 logic level is shifted into 'in_byte'
   A1ReqN = digitalRead(23);
   A1ReqO = A1ReqN;  // initialization -----no longer used after Sept 2022--------------------
-  //-- done later at line 831 A1PowN= digitalRead(40); A1Powold= A1PowN ; if ( A1Powold== 0 && A1PowN== 1) n20=0; // initialization of n20,--- =1 means ,A1 card is presently powered on -----
-  // A1PowN=1 means A1 is presently powere on. So keyboard scanning does not interfere with 'read Seriai2'
-  //----------------------------following 6 lines are used to indicate that Auto-C is powered On----------------------
-  // if (A1PowN == 1) {
-  //   GUI_DrawRectangle(420 - 1, 30 - 1, 420 + 1 * 16, 30 + 32, Colr[7], 1, DOT_PIXEL_DFT);  // erase  rect.A1 card is on,disable keyb. scanning
-  //   GUI_DisNum(420, 46, 2, &Font16, Colr[7], RED);
-  // }  //n
-  // else {
-  //   GUI_DrawRectangle(420 - 1, 30 - 1, 420 + 1 * 16, 30 + 32, Colr[7], 1, DOT_PIXEL_DFT);  // erase  rect. A1 card is off. Let keyb. scanning be enabled
-  //   GUI_DisNum(420, 30, 1, &Font16, Colr[7], BLUE);
-  // }  //
   //......................................................................
   //---------------------------------------------------------------L
   tlim2 = 800 / 4;
@@ -247,14 +236,6 @@ void A4_Init() {
   // ----------- 1-time ---- initialization done ---- All this gets overridden ~ 50 lines later
   IntSz = 2;
   FltSz = 4;  //IntSz = sizeof(int); FltSz = sizeof (float);
-              /*
-  EAd1 = 0; EAd2 = EAd1 + (20 * 2); EAd3 = EAd2 + (20 * 4);  EAd4 = EAd3 + (20 * 2); // EAd2=40, EAd3=(40+80)=120, EAd4=(120+40)=160
-  EAd5 = EAd4 + (200 * 2);   ; EAd6 = EAd5 + (60 * 4); //EAd5=(160+400)=560(100*4 integers),  EAd6= =(560+200)=760 (50 L,l combinations * 4 bytes each)
-  EAd7 = EAd6 + (250 * IntSz) + 125 * FltSz; // EAd7=EAd6+(500+500)= (800+1000)=1800 (125 intgers+125 integers(spare)+125 Float ? Addresses in E2PROM.
-  EAd8 = EAd7 + 220 * IntSz; // EAd8=EAd7+440=(1800+440)=2240,
-  EAd9 = EAd8 + 20 * IntSz; // EAd9=EAd8+40= (2240+40)=2280
-  EAd10 = EAd9 + 100 * IntSz;  // EAd10=EAd9 + 200 bytes=2280 + 200 = 2480.  2480~ 4000 (1520 bytes ; free)  
-        //  */
   EAd1 = 0;
   EAd2 = 40;
   EAd3 = 120;
@@ -266,24 +247,14 @@ void A4_Init() {
   EAd9 = 2280;
   EAd10 = 2480;  // EAd1 ,2,3,4,5,6,7,8 redefined 6/March/2023, Monday
                  // 2480 ~ 4000 (2520 Bytes free)
-                 /*
-    tEA = EAd1; Srv_No = 1; EEPROM.put ( tEA, Srv_No);  // Survey no. =1 stored at addr=EAD1 - 1 time initialization
-    tEA=EAd1+(3*2) ;LRdSr2=0;  EEPROM.put ( tEA, LRdSr2);  //   write 0 at  integer 3 tEA=EAd1+(1*2)  
-    tEA=EAd1+(4*2) ; LSpcN2=0; EEPROM.put ( tEA, LSpcN2);  //  write 0 at  integer 4 tEA=EAd1+(2*2) ;
-      
-    tEA=EAd1+(5*2) ; StRecrds=0; EEPROM.put ( tEA, StRecrds);//no. of records stored in  EAd6~EAd7 region     
-    tEA=EAd1+(6*2) ; Surv_meth=1; EEPROM.put ( tEA, Surv_meth); // 1-- means Schlumberger, 2-Wenner
-        
-    tEA=EAd1+(7*2) ; Survey_No_Stat=0; EEPROM.put ( tEA, Survey_No_Stat); // 0-- means No Survey is open presently
-    //  should use EEPRM.get EEPRPm.put or (EEPROM.update)E2 to modify the value
-      //    */
+  
   Srv_No = 8;
   LSpcN = 7;
   LRdSr = 9;  //these values should get redefined when the statements LSpcN2<-- E2prom[tEA] etc are executed (2~4 lines from here)
   // EAd1~2: 20 integers, EAD2~3: 20 Float nos., EAD3~4: 20 integers// --------------- Get Survey no. from EEPROM  ------------------
   //delay(1000);
   // -------------read from E2PROM -------------------
-  //  /*
+  
   //---------------------------------
   tEA = EAd1;
   EEPROM.get(tEA, Srv_No);  // Survey no. gets updated in mode F4
@@ -305,35 +276,11 @@ void A4_Init() {
 
   //..............................................
   A1_Power();  // this defines: A1PowN. A1PowN==1mens A1 card is powered On
-  /*
-    if (A1PowN == 1) TIMSK3 = 0; else {
-    TIMSK3 = 0;  // if A1PowN ==1,disable Keyboard scanning. if A1PowN=0, then enable keyboard scanning
-    TIMSK3 |= (1 << OCIE3A);
-    }
-  */
-
-  /*     m5=5; m6=25; m7=155; m8=195;
-    j10=0; GUI_DisNum(20+(60*j10),35, m5, &Font12, WHITE,BLUE); j10++; GUI_DisNum(20+(60*j10),35, m6, &Font12, WHITE,BLUE); j10++;
-    GUI_DisNum(20+(60*j10),35, m7, &Font12, WHITE,BLUE); j10++; GUI_DisNum(20+(60*j10),35, m8, &Font12, WHITE,BLUE);
-    //print 4 nos. at x=20,80 ,140 & 200 and y=100. m5,6,7,8 are printed correctly as 5,25,155,195
-
-    m1=5; m2=210; m3=1453; m4=3798;
-    tEA= EAd1; EEPROM.put ( tEA, m1);  tEA= EAd1+(1*IntSz); EEPROM.put(tEA, m2);  tEA= EAd1+(2*IntSz); EEPROM.put ( tEA, m3);
-    tEA= EAd1+(3*IntSz); EEPROM.put ( tEA, m4);  // write 4 nos. E2p viz. 5,210,1453& 3798
-    tEA= EAd1; EEPROM.get ( tEA, m5);  tEA= EAd1+(1*IntSz); EEPROM.get(tEA, m6);  tEA= EAd1+(2*IntSz); EEPROM.get ( tEA, m7);
-    tEA= EAd1+(3*IntSz); EEPROM.get ( tEA, m8);  //read these nos. into m5~8 & print the nos.
-
-    j10=0; GUI_DisNum(20+(60*j10),200, m5, &Font12, WHITE,BLUE); j10++; GUI_DisNum(20+(60*j10),200, m6, &Font12, WHITE,BLUE); j10++; // at y=120
-    GUI_DisNum(20+(60*j10),200, m7, &Font12, WHITE,BLUE); j10++; GUI_DisNum(20+(60*j10),200, m8, &Font12, WHITE,BLUE); j2++; //print 4 nos. at x=20,80 ,140 & 200
-    // now m5,6,7,8 show EEPROM values viz. 5,210,1453,37,98  ------ EEProm works correctly----
-  */
-  //.............................................................
   // --------------------calculation of about float 100 Lv[100] & lv[100] values---19/july/2022 --------------------------------------------------
   for (j2 = 0; j2 <= LNomax - 1; j2++) {  //LNomax = 38 ,presently
     LNo[j2] = j2;
     // --- printing suppressed----
-    // if (j2 <10)  GUI_DisChar(20+(10*j2),140, LNo[j2]+'0' , &Font12, WHITE,BLUE);  // only 10-dot spacing (single digit)
-    // else GUI_DisNum(120+ (20*(j2-10)),140, LNo[j2], &Font12, WHITE,BLUE);  // 20-dot spacing (2 digits)
+    
   }  // end of j2 0~,++loop
   j2 = 0;
   j4 = 0;
@@ -349,11 +296,6 @@ void A4_Init() {
       dx1 = 23;
     }
     //   --- printing suppressed----
-    //if (j5<10)  { GUI_DisChar(20+(10*j5),120+dy1, LCNo[j5]+'0', &Font12,Colr[2], BLACK); GUI_DisChar(20+(10*j5),135+dy1, lCNo[j5]+'0', &Font12,Colr[2], BLACK);}  // only 10-dot spacing
-    // if (j5>=10 && j5<=22) {GUI_DisNum(120+ (20*(j5-10)),120+dy1, LCNo[j5], &Font12,Colr[2], BLACK); GUI_DisNum(120+(20*(j5-10)),135+dy1, lCNo[j5], &Font12,Colr[2], BLACK);}  // 20-dot spacing
-    // if (j5>22)  {GUI_DisNum(10+ (18*(j5-22)),120+dy1, LCNo[j5], &Font12,Colr[2], BLACK); GUI_DisNum(10+(18*(j5-22)),135+dy1, lCNo[j5], &Font12,Colr[2], BLACK);} //
-
-    //if (LNo[j3] == ChPts[j2]) {j2++; j4++; j5=j3+j2; LCNo[j5]=LNo[j3]; lCNo[j5]=j2;  // j5 has changedPrint these Numbers in red
     vr3 = lv[j2] * 18.0;
     if ((Lv[LNo[j3]] < vr3) && (vr3 <= Lv[LNo[j3 + 1]])) {  // one 'chpts' (change point detected)
       j2++;
@@ -363,14 +305,11 @@ void A4_Init() {
       lCNo[j5] = j2;  // ( j5 has changed, j2 (which was 0 originally,has changed, so j5=j3+j2 changes too
 
       // --- printing suppressed----
-      // if (j5<10)  { GUI_DisChar(20+10*(j5),120+dy1, LCNo[j5]+'0', &Font12,Colr[7], RED); GUI_DisChar(20+(10*j5),135+dy1, lCNo[j5]+'0', &Font12,BLACK, YELLOW); }  // only 10-dot spacing
-      // if (j5>=10 && j5<=22) {GUI_DisNum(120+ (20*(j5-10)),120+dy1, LCNo[j5], &Font12,Colr[7], RED); GUI_DisNum(120+20*(j5-10),135+dy1, lCNo[j5], &Font12,BLACK, YELLOW);}  // 20-dot spacing
-      //  if (j5>=22) {GUI_DisNum(10+ (18*(j5-22)),120+dy1, LCNo[j5], &Font12,Colr[7], RED); GUI_DisNum(10+(18*(j5-22)),135+dy1, lCNo[j5], &Font12,BLACK, YELLOW);}  //
+     
     }  // end of 'j5 has changed'
   }    // end of j3 loop
   LCNomax = j5 + 1;
   lCNomax = j2 + 1;  // now,LCNomax overrides the value declared in variable list. if LNomax=47, then LCNomax= ~47+8=55
-  // GUI_DisNum(10+70, 135+dy1+15, LCNomax, &Font12,Colr[2], BLACK); GUI_DisNum(10+ 100, 135+dy1+15, lCNomax, &Font12,Colr[2], BLACK);
   //  ............................end of study of L_l_Table ......................
 
   //  -------------------calculate all K values ---Scalck(float,float)defined on L 874----------
@@ -389,14 +328,6 @@ void A4_Init() {
   //.............................................................................
   IntSz = 2;
   FltSz = 4;
-  // tEA = EAd1;  EEPROM.get ( tEA, Srv_No);  // Survey no. =1 stored at addr=EAD1 - 1 time initialization
-  // tEA=EAd1+(1*IntSz) ;  EEPROM.get ( tEA, LRdSr);  // Last Reading Sr. No & l. spac. no.
-  // tEA=EAd1+(2*IntSz) ;  EEPROM.get ( tEA, LSpcN);
-  // -----------------------------------show Survey no. Spacing,Reading, 'file name' ?
-  //EAd2 = 40; EAd3 = 120; EAd4 = 160; EAd5 = 560; EAd6 = 800;  IntSz = 2; FltSz = 4; // EAd7,EAd8,EAd9 as per ~line 870-880 ,LSpcN2=0; EAd5=560;
-  //GUI_DisString_EN (50+12*m6,120,Str11 , &Font16, BLACK,BLUE);keyBf0=0;m6++;
-  //lcd1.setCursor(0, 1); lcd1.print("Srv no");  lcd1.print(Srv_No); lcd1.print("   "); //Srvey no., next Spacing no. & Reading no.
-  //lcd1.setCursor(11, 1);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); lcd1.setCursor(16, 1);lcd1.print("Rd"); lcd1.print(LRdSr2 + 1); // last reading Sr. No.
   for (m7 = 0; m7 <= 8; m7++) FName2[m7] = Str11[m7];
   //lcd1.setCursor(0, 2);lcd1.print("FNme");lcd1.print(Str11); // copy const string 'Str11' into const 'char' array
   //-------show new names ----------------------------------------------
@@ -411,58 +342,9 @@ void A4_Init() {
   xv1 = 60;
   yv1 = 80;  // xv2=60,yv2=100 -initially
              // ---------------------------------------First, write data, '1.5,0.5'
-             //myF = SD.open("Srv6.csv", FILE_WRITE);
-             //if (myF) {myF.print(1.5); myF.print(","); myF.println(0.5); myF.close(); }
-             // ---------------------------- now read it back & show on Touch screen --------------------------------------------
-             /*
-  myF = SD.open (FName2, FILE_READ);
-     
-    if (myF) while (myF.available()>0) {ch10= myF.read();
-
-     if (xv1>=400) {xv1=60;yv1+=12; }
-     n15 = ch10 & 0x0F; if (n15 <= 9) ch6 = 0x30 + n15; else ch6 = 0x41 + (n15 - 10); // show right hand nibble, (ch6)
-    GUI_DisChar(xv1 + 8, yv1, ch6, &Font12, Colr[7], BLUE); // show 1st nibble (ch6)
-
-    n15 = (ch10 & 0xF0) >> 4 ; if (n15 <= 9) ch8 = 0x30 + n15; else ch8 = 0x41 + (n15 - 10); // show left hand  nibble, (ch8)
-    GUI_DisChar(xv1, yv1, ch8, &Font12, Colr[7], BLUE); //  show 2nd nibble(ch8), to the left of 1st byte
-          //
-    // ? GUI_DisString_EN (xv1, yv1 , "Srv6.csv-size", &Font12, YELLOW, BROWN);
-    GUI_DisChar(xv2, yv2+12, ch10, &Font12, Colr[7], BLUE); //  show as char 1/0/./,  etc.
-    xv1+=20;  xv2+=8;  }
-  
-  //------ myF is 'FName2' = Srv3.csv as of 3/Oct/2022 -----
-  //----------------  (xv2=60, yv2=100)-------------------------- 'FName2' defined correctly------- 
-  if (myF){m8 = myF.size();  GUI_DrawRectangle(xv2 + 20, yv2, xv2 + 20 + (11 * 8), yv2 + 12, Colr[7], DRAW_FULL, DOT_PIXEL_DFT); // erase rect for 6 cha. & 5 digits
-  Str11 = "Srv" + String(Srv_No) + ".csv";
-  for (m7 = 0; m7 <= 9; m7++)  FName2[m7] = Str11[m7]; // e.g. srv100.csv has 910 chars.(String)Str11 copied into char FName2[0~7]
-  
-  //GUI_DisString_EN (50+12*m6,170,Str11 , &Font16, WHITE,BLUE);keyBf0=0;m6++;
-  lcd1.setCursor(4, 3);lcd1.print("FNam"); lcd1.print(Str11);
-  GUI_DisString_EN(xv2 + 10, yv2, FName2, &Font12, Colr[7], BLUE);
-  GUI_DisString_EN(xv2 + 80, yv2, "F-size", &Font12, Colr[7], BLUE); GUI_DisNum (xv2 + 80 + (7 * 8), yv2 ,  m8, &Font12, Colr[7], BLUE); // print size of present file(Srv6.csv)
-  lcd1.setCursor(0, 3); lcd1.print("F-size "); lcd1.print(m8);
-  myF.close(); }
-            */
              //----------------------------------------------------------------------
   del1();
   //......................................................................
-  //Alpha_1();
-  // */
-  //---- print ch10 as Hex code -------
-  /*
-     myF = SD.open ("test1.txt");  if (myF) {Serial.println("test1.txt:"); while (myF.available())  Serial.write (myF.read()); myF.close();}//SD data on Serial Mon.
-          else Serial.println("error reopening test1.txt to see if data on SD card ok");
-         */
-  //......................................end of writing into 'SD'............................................
-
-  //----- for testing E2p write------------------------------------------------
-  //    testing done ok
-  //tEA = EAd1; Srv_No++; EEPROM.put ( tEA, Srv_No);  // Survey no. =1 stored at addr=EAD1 - 1 time initialization
-  //tEA=EAd1+(1*IntSz) ;LRdSr++;  EEPROM.put ( tEA, LRdSr);     // Last Reading Sr. No & l. spac. no.
-  //tEA=EAd1+(2*IntSz) ; LSpcN++; EEPROM.put ( tEA, LSpcN);
-  //.............................end of E2p write.testing......................................
-
-
   // -------------- Below ??---
   // Define some parameters
   Npls[1] = Nbck + Nsig;
@@ -496,18 +378,6 @@ void A4_Init() {
   Erase2();
   j3 = 0;  // j3= no. of bytes receied on 'Serial1' initialized to 0
            // ----------------------Next:write data into EAd6~EAd7 area to simulate calc_Res filling Resistivity data---------------------------------------
-           /*
-   for (n9=1; n9<=NRec; n9++)     //E2prom[tEA] <--StRd[i],StL[i], StRho[i] (int,int,float)
-    {tEA= EAd6+ 8*(n9-1); EEPROM.put ( tEA, StRd[n9-1]); tEA+=2; EEPROM.put (tEA, StL[n9-1]); tEA+=2; EEPROM.put ( tEA, StRho[n9-1]); }
-            */
-           //..............................................end of data into EAd6~Ead7 area.....................................................................
-           //
-           //-----------------------get file names fro 'SD'------------------------------------------------------------------
-           /*
-     File root= SD.open("/") ; printDir(root,0); timr3=0;timc1=0;  while(timc1<4) {timc1=timr3/100; lcd1.setCursor(3,2); lcd1.print(timc1); }    // wait till timc1 becomes =4
-     Serial.println(); Serial.println("Rewinding & repeating below"); Serial.println(); printDir(root,0); root.close();
-          */
-
   //..............................................end o.f file names from SD................................
   //  ---------------
   kpr = 2;
@@ -554,10 +424,7 @@ unsigned int key_prsd_val1(byte keyBf0) {  //
 //      User uses this function to enter a new value for 'L' or 'l' like 0.6 601.2 meter & storemin
 //    ------
 void enter_L_l() {
-  // lcd1.setCursor(0, 0);
-  // lcd1.print("vary the value ");
-  // lcd1.setCursor(5, 1);
-  // lcd1.print("of L & l");
+  
 }
 //...................................................'end of function  "enter_L_l "  .................
 //----------------------------- 18/January/2024--------------
@@ -597,17 +464,6 @@ void E2prom_put() {
 }
 //------------------------------Read L,l values from E2prom---------------
 //   Read L,l values from EEPROM
-//........................................................................
-/*
-   void Read_Ll_E2prm()   
-   {
-                volatile unsigned int i12 = 0;
-    const unsigned int   L_fr_E2prm = 0;
-  tEA = EAd10; for(  i12=0; i12<=35;i12++ ) EEPROM.get(tEA,L_fr_E2prm + i12 ) ; // L value from EEPROM
-
-   
-   }
-         */
 //...........................end of 'Read_Ll from EEPROM & display on 20x4 LCD'
 //---------------------------put 15 bytes in E2prom------------
 //-----------------------------7/Jan/2024--------------
@@ -683,7 +539,7 @@ void calc_Batt() {
   BattV = (float)ln8 / 100.0;
   dtostrf(BattV, 5, 2, st1);                                                         // Batt Volt e.g. 12.83, RcBf_R1[7] expected to be 0
    lcd1.setCursor(10, 0);
-  lcd1.print("BH=");
+  lcd1.print("BY=");
   lcd1.print(BattV, 2);  // now,'Sigma',1lcd1.clear();show at (13,0) B=12.68
   lcd1.setCursor(0, 3);
   lcd1.print("                   ");  // erase line-3 (press measure)
@@ -693,81 +549,18 @@ void calc_Batt() {
   Cycl_Sw = RcBf_R1[4];
   if (RcBf_R1[3] == 1)  // Range Switch on 'Batt' posn.
    {
-  //   lcd1.setCursor(0, 3);
-  //   lcd1.print("Cur Sw:");
-  //   if (Curr_Sw <= 7) { lcd1.print("Auto pres F0"); }  // curr_Sw: line-3
-  //   else
-  //     lcd1.print("Error");
-  //   lcd1.setCursor(0, 1);
-  //   lcd1.print("Range Sw:");
     if (Range_Sw == 1) lcd1.print("Bat      ");  //Line-1: Range switch
     if (Range_Sw >= 2 && Range_Sw <= 4) lcd1.print("Resist");
     //if (Range_Sw == 5 || Range_Sw == 6) lcd1.print("S.P.");
     if (Range_Sw >= 7) lcd1.print("Error");
     lcd1.setCursor(0, 2);
-   // lcd1.print("Cycl Sw:");
-    // if (Cycl_Sw <= 4) {
-    //   lcd1.print(Cycls[Cycl_Sw - 1]);
-    //   lcd1.print(" cycl");
-    // } else lcd1.print("Error");  //
-                                 // Line-2   Cycls Switch  posn.==1,2,3,4 means 1,4,16,64 cycles respectively
+                                
   }
 }
 //.........................................end of calcul. Batt. Volt..............................................................
 //----------------------------------copied from Ketch SimCrm1------ ~90 lines----------------------------------------
 //--------------------------------------------------------------
 //     show Status of Current
-//---------------------------------------------------------------------------
-// void curr_Status() {
-//   Serial.println("curr_Status_Start");
-//   if (RcBf_R1[17] == 1) IeStat = 0;
-//   else IeStat = 1;  // IeStat =0, means 'current not flowing
-//   //y7=60;
-//   if (IeStat == 1) {  // Current flowing ok
-//     IeNo2 = RcBf_R1[18];
- //   GUI_DrawRectangle(110, y7 + 30, 110 + 136, y7 + 60 + 13, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect *8= length of 17*8cha  for ' no current
-    //GUI_DisString_EN (70, y7 + 30 , "--- current"  , &Font12, WHITE, BLUE); //
-
-   // GUI_DisNum(55, 180, IeMag2[IeNo2], &Font12, WHITE, BLUE);  // Current switch(byte 2)CurrMag[i] (i is 0~6 (not 1~7)
-                                                               //GUI_DisString_EN (170 + 50, y7 + 30 ,  "mA flowing OK --", &Font12, WHITE, BLUE);
-                                                               //  Batt Volt.shown at (2,2) in calc_Batt
-                                                               //--------------------------------------------------------------------------------------------------
-//    if (Fpr != 'Q' && Range_Sw != 1) Show_LlK();               // 'show L,l K on line 1,' is blocked , if in 'Test' mode or if in Batt posn.
-
-    //     but later line 0 will be overwritten by the followin 2 lines
-    //.................................................................................................
-    //lcd1.setCursor(0, 0); lcd1.print("B="); lcd1.print(BattV, 2);    // Batt Volt will be overwritten by Current
-    // lcd1.setCursor(13, 0);
-    // lcd1.print("I=");
-    // lcd1.setCursor(15, 0);
-    // lcd1.print("     ");
-    // lcd1.setCursor(15, 0);
-    // lcd1.print(IeMag2[IeNo2]);
-    // lcd1.print("mA");  // first erase 15~19,then current magnitude
-    // lcd1.setCursor(0, 0);
-    // if (Fpr == 'Q') lcd1.print("F0");
-    // if (Fpr == 'H') lcd1.print("F2");
-    // if (Fpr == 'J') lcd1.print("F4");
-    //    if (Fpr!='Q')
-    //{ lcd1.setCursor(1, 0);lcd1.print("2");}  // now, 'Sigma',2 lcd1.setCursor(8, 0);  lcd1.print("           ");
-    // else { lcd1.setCursor(0, 0);lcd1.write(0xCE);lcd1.print("2");}  // CEh is 'T-modified'
-  //}  //
-
-  //else {                                                                                        // IeStat==0,means 'No current'
-    // GUI_DrawRectangle(70, y7 + 30, 70 + 240, y7 + 30 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase 'current flowing ok'
-    // GUI_DisString_EN(110, y7 + 30, "---- No Current--", &Font12, WHITE, RED);                   // current is not flowing
-    //lcd1.setCursor(8, 0);
-    //lcd1.print("-No Curr--- ");
-//     lcd1.setCursor(3, 1);
-//     lcd1.print("mode");
-//     lcd1.setCursor(0, 3);
-//     lcd1.print("-check connections-");
-//     tn1 = 0;
-//     tn2 = 0;
-//     t_transf = 0;  // So DSU knows that Auto_D will now turn off
-//   }
-//   Serial.println("curr_Status_End");
- //}
 //................................................................end of 'curr_status'.........................
 //---------------------------------------------------------------------------------------------------
 // Get L,l & K
@@ -793,69 +586,11 @@ void Show_LlK(void) {
 
     if (ldig1 == 0) lint3 = lint1 / 10;                      // if Ldig1==0 we use integer division, otherwise we use 'fltLv' a float value
                                                              //--------------------------------------------------------------------                                                      //GUI_DisNum (40,130, Lint1, &Font12, Colr[7],BLUE); GUI_DisNum (60,130, lint1, &Font12, Colr[7],BLUE);  //
-                                                             /*   //  next 3 lines commented
-  if (LSpcN2 == 0) {       // next 2 lines which show "Sr no , L= ,l= & K=" are not needed
-    lcd1.clear();  lcd1.setCursor(0, 0); lcd1.print("Sr No ");  lcd1.setCursor(0, 1); lcd1.print("L= "); lcd1.setCursor(9, 1); lcd1.print("l= "); // Sr. no. etc.(lettering)
-    lcd1.setCursor(0, 2); lcd1.print("K= ");
-  }      // "Sr No" at (0,0), "L=" & "l=" at (0,1) &(11,1) & "K=" at (0,2)
-        */
-                                                             //.............................................................................
-    //GUI_DisNum(10, 130, LSpcN2 + 1, &Font16, WHITE, BROWN);  //lcd1.setCursor(8, 0);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); // Srl. No,.1st line
+  
     lcd1.clear();
-    // lcd1.setCursor(0, 0);
-    // lcd1.print("F2");
-    // lcd1.print(" Rd");
-    // lcd1.print(LRdSr2 + 1);
-    // lcd1.print("  Sp");
-    //lcd1.setCursor(10,0); lcd1.print("    "); lcd1.setCursor(10,0);
-    // if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-    // else lcd1.print(LSpcN2);  // //F6h is 'Sigma',4,Rd,Sp
-                              //'Sigma'4,Reading no. & Spacing no (1~N numbering)
-
-    //GUI_DrawRectangle(10, 130, 70 + 240, 130 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase earlier Graphics screen
-                                                                                        //--------------------------Next: L= at (0,1), l= at (6,1), K= at (11,1)------------------------------------
-    // Ldig1 = Lint1 % 10;                                                                 //ldig1 = lint1 % 10;
-    // if (Ldig1 == 0) Lint3 = Lint1 / 10;
-
-    // if (Ldig1 == 0) {
-    //   //GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-    //   lcd1.setCursor(0, 1);
-    //   lcd1.print("L=");
-    //   lcd1.print(Lint3);
-    // }  // L integer, 2nd line
-
-    // else {
-    //   dtostrf(fltLv, 7, 1, st1);
-    //   lcd1.setCursor(0, 1);
-    //   lcd1.print("L=");
-    //   lcd1.print(fltLv, 1);
-    // }  // L-Float, 2nd line
-
-    // if (ldig1 == 0) {
-    //   GUI_DisNum(100, 130, lint3, &Font16, WHITE, BROWN);  // 'l', 2nd line,integert
-    //   lcd1.setCursor(8, 1);
-    //   lcd1.print("            ");
-    //   lcd1.setCursor(8, 1);
-    //   lcd1.print("l=");
-    //   lcd1.print(lint3);
-    // }  // 'erase chars.8~19,line 1.l'- integer,, 2nd line
-    // else {
-    //   dtostrf(fltlv, 7, 1, st1);
-    //   GUI_DisString_EN(100, 130, &st1[0], &Font16, WHITE, BROWN);  // 'l', 2nd line,float
-    //   lcd1.setCursor(8, 1);
-    //   lcd1.print("            ");
-    //   lcd1.setCursor(8, 1);
-    //   lcd1.print("l=");
-    //   lcd1.print(fltlv, 1);
-    // }  // erase chars.8~19,line 1
+    
     dtostrf(Kv[LSpcN2], 7, 2, st1);
-    //GUI_DisString_EN(150, 130, &st1[0], &Font16, WHITE, BROWN);  //Kv(Graphic LCD
-    // lcd1.setCursor(0, 2);
-    // lcd1.print("                    ");  // erase entire line-2
-
-    // lcd1.setCursor(0, 2);
-    // lcd1.print("K=");
-    // lcd1.print(Kvt, 2);  // Kv,  line-2
+    
   }
   //-------- Wenner, below--------------------------------------------------------
   if (Surv_meth == 2)  //---- Wenner------
@@ -868,19 +603,10 @@ void Show_LlK(void) {
     EEPROM.get(tEA, Lint1);                  //tEA += IntSz; EEPROM.get(tEA, lint1); // Lint1='a',get( Lint1, lint1)from E2prom (these are 10*actual values)
     fltLv = (float)Lint1 / 10.0;
     Kvt = WcalcK(fltLv);                                     // fltlv = (float)lint1 / 10.0; Lvalue, lvalue &Kv
-                                                             // dtostrf (fltLv, 5, 1, st1);       GUI_DisString_EN (100, 130 , &st1[0], &Font12, Colr[7], BLUE);  //L
-                                                             // dtostrf (fltlv, 5, 1, st1);       GUI_DisString_EN (150, 130 , &st1[0], &Font12, Colr[7], BLUE);  //l
-                                                             // Lint3 used in Show_Eprom2 is actual value of L
+                                                             
     Ldig1 = Lint1 % 10;                                      //ldig1 = lint1 % 10;
     if (Ldig1 == 0) Lint3 = Lint1 / 10;                      //if (ldig1 == 0) lint3 = lint1 / 10; // if Ldig1==0 we use integer division, otherwise we use 'fltLv' a float value
                                                              //GUI_DisNum (40,130, Lint1, &Font12, Colr[7],BLUE); GUI_DisNum (60,130, lint1, &Font12, Colr[7],BLUE);  //
-                                                             /*
-  if (LSpcN2 == 0) {       // next 2 lines which show "Sr no , L= ,l= & K=" are not needed
-    lcd1.clear();  lcd1.setCursor(0, 0); lcd1.print("Sr No ");  lcd1.setCursor(0, 1); lcd1.print("L= "); lcd1.setCursor(9, 1); lcd1.print("l= "); // Sr. no. etc.(lettering)
-    lcd1.setCursor(0, 2); lcd1.print("K= ");
-  }      // "Sr No" at (0,0), "L=" & "l=" at (0,1) &(11,1) & "K=" at (0,2)
-       */
-    //GUI_DisNum(10, 130, LSpcN2 + 1, &Font16, WHITE, BROWN);  //lcd1.setCursor(8, 0);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); // Srl. No,.1st line
     lcd1.setCursor(0, 0);
     lcd1.print("F2");
     lcd1.print(" Rd");
@@ -890,651 +616,21 @@ void Show_LlK(void) {
     else lcd1.print(LSpcN2);  // //F6h is 'Sigma',4,Rd,Sp
                               //'Sigma'4,Reading no. & Spacing no (1~N numbering)
 
-    //GUI_DrawRectangle(10, 130, 70 + 240, 130 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase earlier Graphics screen
-    //--------------------------Next: L= at (0,1), l= at (6,1), K= at (11,1)------------------------------------
-    // if (Ldig1 == 0) {
-    //   GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-    //   lcd1.setCursor(0, 1);
-    //   lcd1.print("a=");
-    //   lcd1.print(Lint3);
-    // }  // L integer, 2nd line
-
-    // else {
-    //   dtostrf(fltLv, 7, 1, st1);
-    //   lcd1.setCursor(0, 1);
-    //   lcd1.print("a=");
-    //   lcd1.print(fltLv, 1);
-    // }  // L-Float, 2nd line
-       /*
-  if (ldig1 == 0)   {
-    GUI_DisNum (100, 130 , lint3, &Font16, WHITE, BROWN);  // 'l', 2nd line,integert
-     lcd1.setCursor(8, 1); lcd1.print("            ");lcd1.setCursor(8, 1); lcd1.print("l="); lcd1.print(lint3);} // 'erase chars.8~19,line 1.l'- integer,, 2nd line
-  else {
-    dtostrf (fltlv, 7, 1, st1);GUI_DisString_EN (100, 130 , &st1[0], &Font16, WHITE, BROWN);  // 'l', 2nd line,float 
-     lcd1.setCursor(8, 1); lcd1.print("            "); lcd1.setCursor(8, 1);lcd1.print("l="); lcd1.print(fltlv, 1);}  // erase chars.8~19,line 1
-  dtostrf (Kv[LSpcN2], 7, 2, st1);  GUI_DisString_EN (150, 130 , &st1[0], &Font16, WHITE, BROWN); //Kv(Graphic LCD
-                  */
-    // lcd1.setCursor(0, 2);
-    // lcd1.print("                    ");
-    // lcd1.setCursor(5, 2);
-    // lcd1.print("Wenner");  // erase entire line-2
-    // lcd1.setCursor(11, 1);
-    // lcd1.print("K=");
-    // lcd1.print(Kvt, 2);  // Kv,  line-1
+    
   }
   //.......................................Wenner--end............................
 }
 //.....................................................................end of 'Show_LlK' .............................
 //---------------------------------------------------------------------------------------------calculate Resistance----------
-//   /*
+
 void calc_Res() {
-  Serial.println("calc_Res_Start");
-  //------------------------------------temporary predefinition of 7 nos. bytes[10,11,12]= D0h,07h,00 bytes[2,3,4,5]= 0,10,0,01 & Recv_Buff1[2]=0-----
-  //Recv_Buff1[10]=0xD0; Recv_Buff1[11]=07; Recv_Buff1[12]=0;  Recv_Buff1[2]=0; Recv_Buff1[3]=25;Recv_Buff1[4]=0; Recv_Buff1[5]=01; Recv_Buff1[7]=1;
-  // this should make: F_count=2000  icnA1=10  & (5/Gain[7])= 1  i.e. Resm= (2000*10*1/1000) = 10 milli-ohm
-  //...................................................................................................................................................
-  vr2 = (float)RcBf_R1[31] + (float)RcBf_R1[32] * 256.0 + (float)RcBf_R1[33] * 65536.0;  //
-                                                                                         //F_cnt = (long)Recv_Buff1[10] + (long)(Recv_Buff1[11] * 0x100) +  (long)(Recv_Buff1[12] * 65536); // Recv_Buff1[k] is 1~7 (we need 0~6 ;
-                                                                                         //F_cnt = (long)(Recv_Buff1[10] + Recv_Buff1[11] * 256 +  Recv_Buff1[12]*65536);
-                                                                                         //Resint= F_cnt * icn[IeNo2];  //GUI_DisNum (220,145,Resint, &Font16, WHITE,WHITE);//
   ln8 = ((long)RcBf_R1[25] * (long)0x10000) + (long)RcBf_R1[24] * (long)0x100 + (long)RcBf_R1[23];
-  icnA1 = ((float)ln8 / 256.0) * tenf[RcBf_R1[26] - 1];  //Gain[0~3]-- 5/0.5/0.05/0.005
-  Resx = (vr2 * icnA1 * (5.0 / Gain[RcBf_R1[28]]));      // Resx= (pulse count over 4 Sec.)*multiplier*(5/actual gain)
-                                                         // now Resx (resistance) is calculated
-  //-----------------------------temporary --------------------------------------------------------
-  //F_cnt=24000; icnA1=40.0;  Resx = (float)F_cnt * icnA1;// predefined for testing (later removed)
-  //.................................................................................................
-  //-------------for 'Current multipl.=4.9883x10^1, actual Gain=1
-  Resm = Resx / 1000.0;  // Resm --Resistance in milli-ohm on dividing 'Resx'by 1000, we get value in milliOhm
-  // calclate different factors of Resm ,to trace error of 'infinite result'
-  fact1 = (float)ln8 / 256.0;
-  fact2 = tenf[Recv_Buff1[5] - 1];
-  fact3 = 5.0 / Gain[Recv_Buff1[7]];
-  fact4 = 4.9883 / 100;
-  //GUI_DrawRectangle(10, 150, 420, 150 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect {resistance =  */fact1,2,3
-  /*
-    GUI_DisNum (10,150 ,ln8, &Font16, WHITE,BROWN); dtostrf (fact1, 8, 4, st1);GUI_DisString_EN (10+40, 150 , &st1[0], &Font16, Colr[7], BROWN); // fact1 = bytes[4,3].[2]
-    dtostrf (fact2, 3, 1, st1);GUI_DisString_EN (50+110, 150 , &st1[0], &Font16, Colr[7], BROWN);  // fact2 = 1/10/100
-    dtostrf (fact3, 5, 1, st1);GUI_DisString_EN (140+100, 150 , &st1[0], &Font16, Colr[7], BROWN);  //  fact3 = 5.0 /actual gain
-  */
   dtostrf(fact4, 8, 5, st1);
-  // GUI_DisString_EN(240, 150, &st1[0], &Font16, Colr[7], BROWN);  //  fact4 = 0.
-  // GUI_DisNum(240 + 100, 150, F_cnt, &Font16, WHITE, BROWN);
-  if (Surv_meth == 1)  // Schlumberger
-  {
-    LlpSz = 2 * IntSz;
-    tEA = EAd4 + LlpSz * LSpcN2;  // EAd4 for Schlumberger 10/march/2023
-    EEPROM.get(tEA, Lint1);
-    tEA += IntSz;
-    EEPROM.get(tEA, lint1);  //get( Lint1, lint1)from E2prom (these are 10*actual values)
-    fltLv = (float)Lint1 / 10.0;
-    fltlv = (float)lint1 / 10.0;
-    Kvt = ScalcK(fltLv, fltlv);  // Lvalue, lvalue &Kv
   }
-  if (Surv_meth == 2)  // Wenner
-  {
-    LlpSz = 1 * IntSz;
-    tEA = EAd5 + LlpSz * LSpcN2;  // EAd4 changed to EAd5 18/march/2023
-    EEPROM.get(tEA, Lint1);       // tEA += IntSz; EEPROM.get(tEA, lint1); get( Lint1, lint1)from E2prom (these are 10*actual values)
-    fltLv = (float)Lint1 / 10.0;
-    Kvt = WcalcK(fltLv);  // avalue,  & Kvt, fltlv = (float)lint1 / 10.0;
-  }
-  //----------------------------Below: Dipole case-----------------------
-  if (Surv_meth == 3)  // Dipole-Dipole
-  {
-    LlpSz = 2 * IntSz;
-    tEA = EAd9 + LlpSz * LSpcN2;  // EAd9-- for Dipole
-    EEPROM.get(tEA, Lint1);
-    tEA += IntSz;
-    EEPROM.get(tEA, lint1);        //  Lint1='a'(Dipole) & lint1='n'(Dipole) {both 'a' & 'n' are1~5 & 1~5}
-    Kvt = DipcalcK(Lint1, lint1);  // both 'a' & 'n' are actual values (NOT 10*values) integers (1~5) & (1~5)
-  }
+  //   //. . . . . . . . . . . . . . . . . .end of cycl-4 . . . . . . . . . . . . . . . . . . . . . . . . .
 
-  //.....................................end of Dipole case...............
-
-  //---------------------show on Serial monitor-------------------------------------------------------------
-  Serial.print("|F_cnt|");
-  Serial.print(vr2);
-  Serial.print("| ");
-  Serial.print(RcBf_R1[31]);
-  Serial.print(" ");
-  Serial.print(RcBf_R1[32]);
-  Serial.print(" ");
-  Serial.print(RcBf_R1[33]);
-  Serial.print(" ");
-  Serial.print(" |icnA1|- ");
-  Serial.print(icnA1);
-  Serial.print(" exp-");
-  Serial.print(RcBf_R1[26] - 1);
-  Serial.print(" ");
-  Serial.print("Gain No ");
-  Serial.print(RcBf_R1[28]);
-  Serial.print(" ");
-  //Serial.print("Puls cnt-");  Serial.print(F_cnt);  Serial.print(" Gain No.-");Serial.print(Recv_Buff1[7]);
-  //Serial.print(" icnA1-");Serial.print(icnA1); Serial.print(" ");Serial.print(" Res-"); Serial.print(Resm);Serial.println("mohm");
-
-  //...............................................................................end 'Serial moonitor.......................
-
-  // now show resist. in milli_ohm/ Ohm
-  //GUI_DrawRectangle(110, y7 + 30, 110 + (20 * 8), y7 + 43 , Colr[7], DRAW_FULL, DOT_PIXEL_DFT); // erase rect " No current"
-  //GUI_DrawRectangle(180, y7 + 30, 180 + 150 , y7 + 13 , Colr[7], DRAW_FULL, DOT_PIXEL_DFT); // erase rect5
-  //y7 = 100;
-  if (Resm <= 1200.0) {
-    dimR = 'm';
-    Rest[RdNo] = Resm;
-    tRes = Resm;                 // Resistance  in milliOhm
-    tRho = Kvt * (Resm / 1000);  // (Resm/1000) is in 'Ohm'
-  }                              //GUI_DrawRectangle(270, y7 + 40, 270 + 70 , y7 + 53 , Colr[7], DRAW_FULL, DOT_PIXEL_DFT); // erase rect for value
-  else {
-    tRes = Resm / 1000;  //now tRes is in 'ohm'
-    tRho = Kvt * tRes;   // tRho is in ohm-meter
-    if (tRes <= 1200.0)  // if tres<=1200 ohms
-    {
-      dimR = ' ';    //  now tRes is in 'ohm'
-      tRohm = tRes;  //tRohm will be anything from 0.0001 to 10,000 ohm
-    } else {
-      tRes /= 1000.0;
-      dimR = 'k';  //now Res is in kohm
-    }
-  }
-  //---------------now 'tRho' is defined-----------------------------------------------------------------
-  //----------------------------------now store: Reading_No(LRdSr2 0~n numbering) ,L(10* the actual value). & tRho(float value) --(2+2+4)= 8 bytes-----------------
-  if ((Fpr != 'Q') && ((Cycl_Sw == 1) || ((Cycl_Sw == 2) && PrCycl_No == 4))) {
-    if ((Surv_meth == 1) || (Surv_meth == 2))  // Schlumberger or Wenner-- store 8 bytes
-    {
-      tEA = EAd7 + 8 * StRecrds;
-      EEPROM.put(tEA, LRdSr2);
-      tEA += IntSz;
-      EEPROM.put(tEA, Lint1);
-      tEA += IntSz;
-      EEPROM.put(tEA, tRho);  // 1 record written,(Spacing no.,Resistance)
-                              // in Schlumberger mode Lint1 would be L (actually 10* actual value). In Wenner moode Lint1 would be 'a'(actually 10 * actal value)
-    }
-    if (Surv_meth == 3)  // Dipole-Dipole method -- store 10 bytes
-    {
-      tEA = EAd7 + 10 * StRecrds;
-      EEPROM.put(tEA, LRdSr2);
-      tEA += IntSz;
-      EEPROM.put(tEA, Lint1);
-      tEA += IntSz;
-      EEPROM.put(tEA, lint1);  // note: Lint1=(Dipole)'a' and lint1=(Dipole)'n'
-      tEA += IntSz;
-      EEPROM.put(tEA, tRho);  //
-    }
-    StRecrds++;
-    tEA = EAd1 + (5 * 2);
-    EEPROM.put(tEA, StRecrds);  //the 'no. of records' stored at   EAd7~EAd8 & EAd1+5*IntSz.region
-  }
-  // first,tEA -->to correct Record in EAd6~EAd7.then save int'Reading no.' then L (10*actual value), & finally  float no.'tRho' (Resistivity)
-  //...............................................then,......................................................................................
-  // dtostrf(tRes, 9, 2, st1);  //
-  // GUI_DisString_EN(210, 130, &st1[0], &Font12, Colr[7], BLUE);
-  // GUI_DisString_EN(130 + xn1 + 70, 180, "m-ohm", &Font12, Colr[7], BLUE);  // "milli-ohm"
-
-  // dtostrf(tRho, 9, 2, st1);  //
-  // GUI_DisString_EN(280, 130, &st1[0], &Font12, Colr[7], BLUE);
-  // GUI_DisString_EN(290 + 108, 130, "ohm-m", &Font12, Colr[7], BLUE);  // "milli-ohm"
-  // // For testing:--LSpcN++not done; update Last Spacing No
-  // GUI_DisNum(255 + xn1, 180, LSpcN2, &Font12, Colr[7], BLUE);
-  // GUI_DisNum(255 + xn1 + (5 * 8), 180, LRdSr2, &Font12, Colr[7], BLUE);  //  no.of readings
-                                                                          //-----------------Next:-- Res. & Rho written on 20x4 Lcd-------------------------------------------------------                                           //    */
-                                                                         //-------------------------------now show Resistace on line-1---------------------------------
-  if (Cycl_Sw == 1)                                                      // 1-cycle
-  {
-    lcd1.setCursor(0, 1);
-    lcd1.print("                   ");
-    lcd1.setCursor(19, 1);
-    lcd1.print(" ");  // erase entire line-1 & ch. (19,1)
-    lcd1.setCursor(8, 1);
-    lcd1.print("R=");
-    lcd1.print(tRes, 2);
-    if (dimR == 'm') lcd1.print("m");
-    if (dimR == ' ') lcd1.print(" ");
-    if (dimR == 'k') lcd1.print("k");
-    lcd1.write(0xF4);  // lcd1.setCursor(4, 0);F4h is 'ohm'
-    //----------------------------no 'Rho' in 'Test' mode---Line-2 --------------------
-    if (Fpr != 'Q') {  //
-      lcd1.setCursor(0, 2);
-      lcd1.write(0xE6);
-      lcd1.print("=");
-      lcd1.print(tRho, 2);
-      lcd1.print("");
-      lcd1.write(0xF4);
-      lcd1.print("m");  //4th line, E6 means Rho, ohm-meter
-      lcd1.print("-stored-");
-    } else {
-      lcd1.setCursor(0, 2);
-      lcd1.print("-Res. not stored- ");
-    }
-    lcd1.setCursor(0, 3);
-    lcd1.print("press 6 or F4");
-    //..............................................................................
-    lcd1.setCursor(0, 0);
-    if (Fpr == 'Q') lcd1.print("F0");
-    if (Fpr == 'H') lcd1.print("F2");
-    if (Fpr == 'J') lcd1.print("F4");
-    //lcd1.setCursor(1,0); lcd1.print("4");  // now, 'Sigma),4 ('T',4 in 'Test' mode)
-
-    if (Fpr != 'Q') {
-      lcd1.setCursor(0, 3);
-      lcd1.print("press 6 for next");  // message for next operation
-      lcd1.setCursor(12, 0);
-      lcd1.print("       ");
-      lcd1.setCursor(19, 0);
-      lcd1.print(" ");
-    }  // erase chars. 12~19 & ch. (19,0)
-    else {
-      lcd1.setCursor(0, 3);
-      lcd1.print("press 6 or F4");
-    }                  // 'Test mode
-                       //-----------------------------no printing of 'L' in 'test' mode----(1-cycle mode---------------------------------------
-    if (Fpr != 'Q') {  // i.e. F2, Survey mode
-
-      if (Surv_meth == 1)  // Schlumberger
-      {
-        if (Ldig1 == 0) {
-          GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-          lcd1.setCursor(0, 0);
-          lcd1.print("                    ");
-          lcd1.setCursor(0, 0);  // erase line 0
-          lcd1.print("F2");
-          lcd1.print(" Rd");
-          lcd1.print(LRdSr2 + 1);
-          lcd1.print("  Sp");
-          //lcd1.setCursor(10,0); lcd1.print("    "); lcd1.setCursor(10,0);
-          if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-          else lcd1.print(LSpcN2);  //
-          lcd1.setCursor(13, 0);
-          lcd1.print("L=");
-          lcd1.print(Lint3);
-        }  // L integer, at (12,0)
-        else {
-          dtostrf(fltLv, 7, 1, st1);
-          lcd1.setCursor(0, 0);
-          lcd1.print("                    ");
-          lcd1.setCursor(0, 0);  // erase line 0& brng the Cursor back to(0,0)
-          lcd1.setCursor(0, 0);
-          lcd1.print("F2");
-          lcd1.print(" Rd");
-          lcd1.print(LRdSr2 + 1);
-          lcd1.print("  Sp");
-          //lcd1.setCursor(10,0); lcd1.print("    "); lcd1.setCursor(10,0);
-          if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-          else lcd1.print(LSpcN2);  //
-          lcd1.setCursor(13, 0);
-          lcd1.print("L=");
-          lcd1.print(fltLv, 1);
-        }  // L-Float at (12,0)
-      }
-
-      if (Surv_meth == 2)  // Wenner method
-      {
-        if (Ldig1 == 0) {
-          GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-          lcd1.setCursor(0, 0);
-          lcd1.print("                    ");
-          lcd1.setCursor(0, 0);  // erase line 0
-          lcd1.setCursor(0, 0);
-          lcd1.print("F2");
-          lcd1.print(" Rd");
-          lcd1.print(LRdSr2 + 1);
-          lcd1.print("  Sp");
-          //lcd1.setCursor(10,0); lcd1.print("    "); lcd1.setCursor(10,0);
-          if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-          else lcd1.print(LSpcN2);  //
-          lcd1.setCursor(13, 0);
-          lcd1.print("a=");
-          lcd1.print(Lint3);
-        }  // L integer, at (12,0)
-        else {
-          dtostrf(fltLv, 7, 1, st1);
-          lcd1.setCursor(0, 0);
-          lcd1.print("                    ");
-          lcd1.setCursor(0, 0);  // erase line 0
-          lcd1.setCursor(0, 0);
-          lcd1.print("F2");
-          lcd1.print(" Rd");
-          lcd1.print(LRdSr2 + 1);
-          lcd1.print("  Sp");
-          //lcd1.setCursor(10,0); lcd1.print("    "); lcd1.setCursor(10,0);
-          if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-          else lcd1.print(LSpcN2);  //
-          lcd1.setCursor(13, 0);
-          lcd1.print("a=");
-          lcd1.print(fltLv, 1);
-        }  // L-Float at (12,0)
-      }
-      //---------------------- Wenner , below  ?
-    }
-
-    //............................................................................................................
-  }
-  //----------------- 20x4 LCD screen when it is 4-Cycle mode.----  if ( ==1|| ==2 ||  ==3 ||  ==4)
-  //---------enter here 4 blocks of writing on 20x4 LCD-----------------------
-  if (Cycl_Sw == 2 || Cycl_Sw == 3 || Cycl_Sw == 4)  // 4/16/64 cycls mode
-  {
-    lcd1.setCursor(12, 0);
-    lcd1.print("       ");
-    lcd1.setCursor(19, 0);
-    lcd1.print(" ");  // erase chars. 12~19 & ch. (19,0)
-    if (Fpr != 'Q') {
-      //------------------------------------------no printing of 'L' in 'test' mode----(4-cycle mode---------------------------------------
-      if (Ldig1 == 0) {  //L=--- at top right corner
-        GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-        lcd1.setCursor(13, 0);
-        lcd1.print("L=");
-        lcd1.print(Lint3);
-      }  // L integer, at (12,0)
-      else {
-        dtostrf(fltLv, 7, 1, st1);
-        lcd1.setCursor(13, 0);
-        lcd1.print("L=");
-        lcd1.print(fltLv, 1);
-      }  // L-Float at (12,0)
-         //...............................................................................................................................
-    }
-    //- - - - - - - - Cycl-1- - - - - - - - - - -- - - - - - - - - --  - - - - - - - - - -
-    if (PrCycl_No == 1) {
-      lcd1.setCursor(0, 1);
-      lcd1.print("                   ");
-      lcd1.setCursor(19, 1);
-      lcd1.print(" ");  // erase entire line-1 & ch. (19,1)
-      lcd1.setCursor(3, 1);
-      lcd1.print("R(");
-      lcd1.print(PrCycl_No);
-      lcd1.print("/4)=");
-      lcd1.print(tRes, 2);  //erase 0~2
-      if (dimR == 'm') lcd1.print("m");
-      if (dimR == ' ') lcd1.print(" ");
-      if (dimR == 'k') lcd1.print("k");
-      lcd1.write(0xF4);  //  F4h is 'ohm'
-    }                    //
-                         //. . . . . . . . . . . . . . . . . .end of cycl-1 . . . . . . . . . . . . . . . . . . . . . . . . .
-                         //- - - - - - - - Cycl-2- - - - - - - - - - -- - - - - - - - - --  - - - - - - - - - -
-    if (PrCycl_No == 2) {
-      lcd1.setCursor(0, 1);
-      lcd1.print("                   ");
-      lcd1.setCursor(19, 1);
-      lcd1.print(" ");  // erase entire line-1 & ch. (19,1)
-      lcd1.setCursor(3, 1);
-      lcd1.print("R(");
-      lcd1.print(PrCycl_No);
-      lcd1.print("/4)=");
-      lcd1.print(tRes, 2);  //erase 0~2
-      if (dimR == 'm') lcd1.print("m");
-      if (dimR == ' ') lcd1.print(" ");
-      if (dimR == 'k') lcd1.print("k");
-      lcd1.write(0xF4);  //  F4h is 'ohm'
-    }                    //
-                         //. . . . . . . . . . . . . . . . . .end of cycl-2 . . . . . . . . . . . . . . . . . . . . . . . . .
-                         //- - - - - - - - Cycl-3- - - - - - - - - - -- - - - - - - - - --  - - - - - - - - - -
-    if (PrCycl_No == 3) {
-      lcd1.setCursor(0, 1);
-      lcd1.print("                   ");
-      lcd1.setCursor(19, 1);
-      lcd1.print(" ");  // erase entire line-1 & ch. (19,1)
-      lcd1.setCursor(3, 1);
-      lcd1.print("R(");
-      lcd1.print(PrCycl_No);
-      lcd1.print("/4)=");
-      lcd1.print(tRes, 2);  //erase 0~2
-      if (dimR == 'm') lcd1.print("m");
-      if (dimR == ' ') lcd1.print(" ");
-      if (dimR == 'k') lcd1.print("k");
-      lcd1.write(0xF4);  //  F4h is 'ohm'
-    }                    //
-                         //. . . . . . . . . . . . . . . . . .end of cycl-3 . . . . . . . . . . . . . . . . . . . . . . . . .
-                         //- - - - - - - - Cycl-4- - - - - - - - - - -- - - - - - - - - --  - - - - - - - - - -
-    if (PrCycl_No == 4)  // ----------last of 4 cycles------------------------
-    {
-      lcd1.setCursor(0, 1);
-      lcd1.print("                   ");
-      lcd1.setCursor(19, 1);
-      lcd1.print(" ");  // erase entire line-1  & ch. (19,1)
-      lcd1.setCursor(3, 1);
-      lcd1.print("R(");
-      lcd1.print(PrCycl_No);
-      lcd1.print("/4)=");
-      lcd1.print(tRes, 2);  //erase 0~2
-      if (dimR == 'm') lcd1.print("m");
-      if (dimR == ' ') lcd1.print(" ");
-      if (dimR == 'k') lcd1.print("k");
-      lcd1.write(0xF4);  //  9Ah is 'ohm'
-                         //----------------------No printing of 'Rho' in 'Test' mode-------------------------
-      if (Fpr != 'Q') {
-        lcd1.setCursor(0, 2);
-        lcd1.write(0xE6);
-        lcd1.print("=");
-        lcd1.print(tRho, 2);
-        lcd1.print("");
-        lcd1.write(0xF4);
-        lcd1.print("m");  //4th line, E6 means Rho
-        lcd1.print("-stored-");
-      } else {
-        lcd1.setCursor(0, 2);
-        lcd1.print("-Res. not stored- ");
-        lcd1.setCursor(0, 3);
-        lcd1.print("press 6 or F4");
-      }  // 'F0', 'Test' mode
-         //...................................................................................................................
-      lcd1.setCursor(0, 3);
-      lcd1.print("press 6 for next");  // message for next operation
-    }                                  //
-    //. . . . . . . . . . . . . . . . . .end of cycl-4 . . . . . . . . . . . . . . . . . . . . . . . . .
-
-  }  // end of 'if '4-Cycle mode'
-     //..................................................................................................................
-     //else
-     //tRes,tRho defined ,Reading no. & Spacing n0. Now sore tRes & spacing n0. in range EAd6~EAd7
-     //  -------------------------------------------------------store on SD--only if Cycles-1 or (cycles-4/16/64 &&-present_cycle==4)---------------------------------
-  if (Cycl_Sw == 1 || (PrCycl_No == 4 && (Cycl_Sw == 2 || Cycl_Sw == 3 || Cycl_Sw == 4))) {
-    //---------- now writing  into 'SD'-----(upto Ln ~1252-----------------------------------------------------------------
-    //- - - - - - - - - - - - - - - --- - --  ---- -  - - - - - - -- -- - - - - - - -- -- - -  - --  - -- -
-    if (Fpr != 'Q')  // {writing into 'SD' not to be done when Fpr==0, Test mode)
-    {
-      myF = SD.open(FName2, FILE_WRITE);
-      //   /*
-      if (LRdSr2 == 0) {  // 1st line:Survey No.  2nd line: Survey method (in 4th column)
-        myF.print(",");
-        myF.print(" Survey No.  ");
-        myF.print(",");
-        myF.print(Srv_No);
-        myF.print(",");
-        myF.println();
-        myF.print(",");
-        myF.print(",");
-        myF.print(",");
-        if (Surv_meth == 1) myF.print("Schlumberger");
-        if (Surv_meth == 2) myF.print("Wenner");
-        if (Surv_meth == 3) myF.print("Dipole-Dipole");
-        myF.print(",");
-        myF.print("Configuration");
-        myF.println();  //"Dip-Dip",next column:Conf.
-
-        //   headinmg: Rdng,Spac., (L,l)/('a')/ (a(Dipole),'n'),K,Res,Rho
-        myF.print("Readig.");
-        myF.print(",");
-        myF.print("Spac. ");
-        myF.print(",");
-        if (Surv_meth == 1) {
-          myF.print("           L");
-          myF.print(",");
-          myF.print("           l");
-        }
-        if (Surv_meth == 2) myF.print("         a");
-        if (Surv_meth == 3) {
-          myF.print("    a");
-          myF.print(",");
-          myF.print("          n");
-        }
-        myF.print(",");
-        myF.print("         K");
-        myF.print(",");
-        myF.print("         Res");
-        myF.print(",");
-        myF.print("         Rho");  //  print rho and theen next line
-        myF.print(",");
-        myF.println("         Batt ");  // Batt. & then next line
-                                        // next: 2nd line of heading
-        myF.print("no.");
-        myF.print(",");
-        myF.print(" no.");
-        myF.print(",");
-        if (Surv_meth == 1) {
-          myF.print("           m.");
-          myF.print(",");
-          myF.print("           m.");
-        }
-        if (Surv_meth == 2) myF.print("         m.");
-        if (Surv_meth == 3) {
-          myF.print("    m.");
-          myF.print(",");
-          myF.print("          m.");
-        }
-        myF.print(",");
-        myF.print(",");
-        myF.print("         ohm");
-        myF.print(",");
-        myF.print("         ohm-m.");  //  print blank,ohm.uhm-m.
-        myF.print(",");
-        myF.println("          Volt.");  // (Batt-)volt.,next line
-      }                                  //Print the header only once after a new file is opened. i.e. 1st reading
-      //      */
-      //  from 1st reading onward : print values of Rdng, Spacing no.,(L,l). K,Res, Rho
-      myF.print(LRdSr2 + 1);
-      myF.print(",");
-      myF.print(LSpcN2 + 1);
-      myF.print(",");
-      if (Surv_meth == 1) {
-        myF.print(fltLv);
-        myF.print(",");
-        myF.print(fltlv);
-        myF.print(",");
-      }  //RdNo,Spacing no.,L,l
-      if (Surv_meth == 2) {
-        myF.print(fltLv);
-        myF.print(",");
-      }  //myF.print(fltlv ); myF.print(",");} //
-      if (Surv_meth == 3) {
-        myF.print(Dip_a);
-        myF.print(",");
-        myF.print(Dip_n);
-        myF.print(",");
-      }  //  integers (Dipole) a & (Dipole)n
-         //------------------------------------------following 3 lines now split
-         //dtostrf (tRohm, 11, 5, st1)   ;   Str11 = {""}; // initialize Str11
-         //for (m7 = 0; m7 <= 10; m7++) Str11 += st1[m7]; // addd chars. st1[0~10] to Str11 one by one
-         //myF.print(Str11); myF.print(",");
-
-      myF.print(Kvt);
-      myF.print(",");  // K
-                       //--------------------------------------by now Rd no.,Spacing no.,L,l & K have been printed -------
-                       //------------------------- next: tRohm (resistance) will be printed via 1 of 6 branches ---------
-                       //  myF.print(Str11); myF.print(",");
-      //vr3=0.00001; vr4=vr3; select_print_case( 0.00001) ; select_print_case( 0.99999); select_print_case( 0.0001) ; select_print_case( 9.9999); //write 4 nos. on 'SD'
-      tRohm = Resm / 1000;  //tRohm in 'ohm' redefined
-                            //-------------------------Different case 0.00001 to >10000.0 , 6 braches------------------------------------------------
-                            //--------------------------case 1-------------------------------------------------------------------
-      if (tRohm < 1.0)      // <1
-      {
-        dtostrf(tRohm, 7, 5, st1);
-        Str11 = { "" };                                // initialize Str11
-        for (m7 = 0; m7 <= 6; m7++) Str11 += st1[m7];  // copy 7 chars. st1[0~6] to Str11 one by one
-        myF.print(Str11);
-        myF.print(",");  // print tRohm,before tRho
-      }
-      //................................................end of case 1 ......................................
-      //--------------------------case 2-------------------------------------------------------------------
-      if (tRohm >= 1.0 && tRohm < 10.0)  // 1~10
-      {
-        dtostrf(tRohm, 6, 4, st1);
-        Str11 = { "" };                                // initialize Str11
-        for (m7 = 0; m7 <= 5; m7++) Str11 += st1[m7];  // copy 6 chars. st1[0~5] to Str11 one by one
-        myF.print(Str11);
-        myF.print(",");  // print tRohm,before tRho
-      }
-      //................................................end of case 2 ......................................
-      //--------------------------case 3-------------------------------------------------------------------
-      if (tRohm >= 10.0 && tRohm < 100.0)  // 10~100
-      {
-        dtostrf(tRohm, 6, 3, st1);
-        Str11 = { "" };                                // initialize Str11
-        for (m7 = 0; m7 <= 5; m7++) Str11 += st1[m7];  // copy 6 chars. st1[0~5] to Str11 one by one
-        myF.print(Str11);
-        myF.print(",");  // print tRohm,before tRho
-      }
-      //................................................end of case 3 ......................................
-      //--------------------------case 4-------------------------------------------------------------------
-      if (tRohm >= 100.0 && tRohm < 1000.0)  // 100~1000
-      {
-        dtostrf(tRohm, 6, 2, st1);
-        Str11 = { "" };                                // initialize Str11
-        for (m7 = 0; m7 <= 5; m7++) Str11 += st1[m7];  // copy 6 chars. st1[0~5] to Str11 one by one
-        myF.print(Str11);
-        myF.print(",");  // print tRohm,before tRho
-      }
-      //................................................end of case 4 ......................................
-      //--------------------------case 5-------------------------------------------------------------------
-      if (tRohm >= 1000.0 && tRohm < 10000.0)  // 1000~10000
-      {
-        dtostrf(tRohm, 6, 1, st1);
-        Str11 = { "" };                                // initialize Str11
-        for (m7 = 0; m7 <= 5; m7++) Str11 += st1[m7];  // copy 6 chars. st1[0~5] to Str11 one by one
-        myF.print(Str11);
-        myF.print(",");  // print tRohm,before tRho
-      }
-      //................................................end of case 5 ......................................
-      //--------------------------case 6-------------------------------------------------------------------
-      if (tRohm >= 10000.0)  // >10000
-      {
-        dtostrf(tRohm, 7, 0, st1);
-        Str11 = { "" };                                // initialize Str11
-        for (m7 = 0; m7 <= 6; m7++) Str11 += st1[m7];  // copy 7 chars. st1[0~5] to Str11 one by one
-        myF.print(Str11);
-        myF.print(",");  // print tRohm,before tRho
-      }
-      //................................................end of case 6 ......................................
-      //-------now : StRecrds++ must be done---------------------------------
-      //'tRohm' has been converted to apprpriate String 'Str11' & printed on 'SD'. next: 'Rho'
-      myF.print(tRho);
-      myF.print(",");
-      myF.print(BattV);
-      myF.println();  // Rho, Batt_Voltage, then. next line
-
-      //----------------------------------------write test values----------------------------------------------------------
-
-      //myF.print(Hr); myF.print(":"); myF.print(mint); myF.print(":"); myF.print(Scnd); myF.print(","); // after Rho, Hours:minutes:Seconds is printed
-      //myF.print (Dte); myF.print("/"); myF.print (Mn); myF.print("/"); myF.println (Yr);
-
-      Serial.println("Stored Successfully");  // Message on Serial Monitor {st1 is string of Resist., st2 is rhoK,Resist. ,Rho, (Rho with println) }
-                                              // print string 'st1' instead float 'tRes'
-                                              //--------write 2 lines of 8 resist. values ------------------------
-                                              //for (m12=0; m12<=1; m12++) { myF.print(m11+ (m12*8)); for (m11=0; m11<=7; m11++) {myF.print(",");myF.print(tRes2[m11 +(m12*8)]);}  myF.println(" ");
-      //---------------------------------------------------------------------------------------------------------------------
-      //------------------block LSpcN2++ unless a key say '3' is pressed in 'Normal Survey' mode------------------------------------------------------------------------------------
-      if ((LSpcN2 <= 43 && freezeSP == 0) && (Cycl_Sw == 1 || (PrCycl_No == 4 && (Cycl_Sw == 2 || Cycl_Sw == 3 || Cycl_Sw == 4)))) LSpcN2++;  // this way,the upper limit is = 44 (As LSpcN2+1) displayed on 20*4 LCD) max.valued displayed is 45
-                                                                                                                                              //...............................................................................................................................
-                                                                                                                                              //...........................................................................................................................
-      LRdSr2++;                                                                                                                               // if (Cycl_Sw ==2/3/4) && Present cycle No==4) then Reading no++
-
-      // reintroduced today,24/nov/2022-- writing LrdSr2++ &LSpcN2++ into E2prom
-      //  ---------------E2prom values updated -----------------------------
-      tEA = EAd1 + (3 * 2);
-      EEPROM.put(tEA, LRdSr2);  // Last Reading Sr. No & l. spac. no. both updated
-      tEA = EAd1 + (4 * 2);
-      EEPROM.put(tEA, LSpcN2);
-      // .....................................................................
-      myF.close();  // update Last Spacing No  }
-                    // end of 'if(Cycl_Sw==1 etc.
-    }               // end of writing into 'SD''
-    // --------------copied ~ 10 lines from Ln1780------------------------------------------------------------
-    // ..........................................end of writing on SD...........................................
-    // ------ for testing :-- LSpcN not changed
-    // }
-    Serial.println("calc_Res_End");
-  }  // end of writing into 'SD'
-     //   */
-}  //..........................................end of 'calc_Res'............................................
+  // }  // end of 'if '4-Cycle mode'
+  //}  //..........................................end of 'calc_Res'............................................
    //--------------------------------------select print format-----?----------------
 
 // ------------------------------show data received from (now,(7/Sept/2022) from Sketch DSU2)(Earlier,Auto_D, on Serial2 channel)-----------------------------
@@ -1561,29 +657,25 @@ void Recv_Serial2() {  //j3a=0 to be done at initialization time          xv1=60
     n15 = ch10 & 0x0F;
     if (n15 <= 9) ch6 = 0x30 + n15;
     else ch6 = 0x41 + (n15 - 10);                            // calculate 1st nibble (lower nibble only) (later try st3=String (n14,HEX);)
-    GUI_DisChar(xv1 + 8, yv1, ch6, &Font12, Colr[7], BLUE);  // show 1st nibble (ch6)
+   // GUI_DisChar(xv1 + 8, yv1, ch6, &Font12, Colr[7], BLUE);  // show 1st nibble (ch6)
 
     n15 = (ch10 & 0xF0) >> 4;
     if (n15 <= 9) ch8 = 0x30 + n15;
     else ch8 = 0x41 + (n15 - 10);                        //calculate 2nd nibble (ch8)
-    GUI_DisChar(xv1, yv1, ch8, &Font12, Colr[7], BLUE);  //  show 2nd nibble(ch8), to the left of 1st byte
+    //GUI_DisChar(xv1, yv1, ch8, &Font12, Colr[7], BLUE);  //  show 2nd nibble(ch8), to the left of 1st byte
     //  }
     //show char. received on serial monitor ------------n 22/nov/2022: print j3a too----------------------
-    /*
-      Serial.print(" j3a="); Serial.print(j3a); Serial.print(" tn1="); Serial.print(tn1); Serial.print(" tn2="); Serial.print(tn2);    //  Serial.print("j3a=" );Serial.print(j3a);
-                    Serial.print(" RcBf_R1[tn1] "); Serial.println(RcBf_R1[tn1]);  //  Serial.print("ch- "); Serial.print(ch10);
-                  */
     //----------------write ch10-on lcd1 at (m13,1) 7 advance m13-------------------------------------------------------------------------------------------
     //lcd1.setCursor(m13,1); lcd1.print(ch10); m13++; j3ac
 
     //..........................................................................................................
     if (RcBf_R1[tn1] == 0xFF && RcBf_R1[tn1 - 1] == 0xFF) {
       xv1 += 20;
-      GUI_DisNum(xv1, yv1, tn1, &Font12, Colr[7], BLACK);
+      //GUI_DisNum(xv1, yv1, tn1, &Font12, Colr[7], BLACK);
       xv1 += 20;
-      GUI_DisNum(xv1, yv1, tn2 + 1, &Font12, Colr[7], BROWN);  //tn1& tn2+1
+      //GUI_DisNum(xv1, yv1, tn2 + 1, &Font12, Colr[7], BROWN);  //tn1& tn2+1
       xv1 += 20;
-      GUI_DisNum(xv1, yv1, t_transf + 1, &Font12, Colr[7], BLUE);
+      //GUI_DisNum(xv1, yv1, t_transf + 1, &Font12, Colr[7], BLUE);
       xv1 = 60;
       yv1 += 12;
       tn1++;  // // show resistance
@@ -1607,13 +699,7 @@ void Recv_Serial2() {  //j3a=0 to be done at initialization time          xv1=60
     //if (tn1>=2 && ch10==0xFF && Ch10old==0xFF) {xv1=60;yv1+=16; ch10old=ch10;}
     //  ---- 2 nibbles  over -------
 
-    /*
-      if (j3a >= 2) // if no. of bytes received is >= 2
-      {
-      if (j3a >= Recv_Buff1[1] ) Updt_RecD();  // if the expected no. of bytes have received , then Updt_RecD will show the appropriate Batt Volt. etc.
-      }
-      //  */
-  }  // end of 'if Serial2 available
+     }  // end of 'if Serial2 available
 }
 // ............................................................
 //..............................................end of 'Recev_Serial2' & (calc_Res)..... ~90 lines.............
@@ -1722,730 +808,18 @@ void check_Keyboard() {
 // show L,l stored in E2prom (Lint1, lint1)
 //----------------------------------------------------------------------------------------------
 void Show_Eprom2(unsigned int L, unsigned int l) {
-  volatile float fltL, fltl, vr5, Kv;
-  //----- note that L=10 * actual value, similarly l= l0* actual value
-  Ldig1 = L % 10;
-  Lint3 = L / 10;
-  ldig1 = l % 10;
-  lint3 = l / 10;  // when Ldig1=0, it means that L is a multiple of 1. similarly for 'l'
-  fltL = (float)L / 10.0;
-  fltl = (float)l / 10.0;
-  Kv = ScalcK(fltL, fltl);                                                     //
-  GUI_DrawRectangle(4, 96 + 16, 430, 140, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect 426x28
-  n14 = LSpcN2;                                                                //Spacing n0.
-  if (n14 == 0) {
-    lcd1.clear();
-    lcd1.setCursor(0, 0);
-    lcd1.print("Sr No ");
-    lcd1.setCursor(0, 1);
-    lcd1.print("L= ");
-    lcd1.setCursor(9, 1);
-    lcd1.print("l= ");  // Sr. no. etc.
-    lcd1.setCursor(0, 2);
-    lcd1.print("K= ");
-  }  // "Sr No" at (0,0), "L=" & "l=" at (0,1) &(11,1) & "K=" at (0,2)
-
-  GUI_DisNum(5, 124, n14 + 1, &Font16, WHITE, BROWN);
-  lcd1.setCursor(6, 0);
-  lcd1.print(n14 + 1);  // Srl. No,.1st line
-  if (Ldig1 == 0) {
-    GUI_DisNum(40, 124, Lint3, &Font16, WHITE, BROWN);  // L integer, 2nd line
-    lcd1.setCursor(3, 1);
-    lcd1.print("L= ");
-    lcd1.print(Lint3);
-    lcd1.print("   ");
-  } else {
-    dtostrf(fltL, 7, 1, st1);  // L-Float, 2nd line
-    GUI_DisString_EN(40, 124, &st1[0], &Font16, WHITE, BROWN);
-    lcd1.print("L= ");
-    lcd1.setCursor(3, 1);
-    lcd1.print(fltL, 1);
-  }
-  if (ldig1 == 0) {
-    GUI_DisNum(110, 124, lint3, &Font16, WHITE, BROWN);  // 'l'- integer,, 2nd line
-    lcd1.setCursor(11, 1);
-    lcd1.print("L= ");
-    lcd1.print(lint3);
-    lcd1.print("   ");
-  } else {
-    dtostrf(fltl, 7, 1, st1);  // 'l'-, 2nd linefloat
-    GUI_DisString_EN(110, 124, &st1[0], &Font16, WHITE, BROWN);
-    lcd1.setCursor(11, 1);
-    lcd1.print("L= ");
-    lcd1.print(fltl, 1);
-  }
-  dtostrf(Kv, 7, 2, st1);
-  GUI_DisString_EN(200, 124, &st1[0], &Font16, WHITE, BROWN);
-  lcd1.setCursor(2, 2);
-  lcd1.print("K= ");
-  lcd1.print(Kv, 2);  // calculated 40 lines
 }
 // .........................................................end of Show_Eprom2 ...copied on .9/Sept/2022.......................
 // ---------------------------------------Show_Epro3 (modified from Show_Eprom2)------------------------------------------
 // show L,l stored in E2prom (Lint1, lint1)
 //-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-..-.-.-.-...-..-.-..-..-..--.---.-.--.-.-.--.--.---------------------
 void Show_Eprom3(unsigned int L, unsigned int l) {
-  volatile float fltL, fltl, vr5, Kv;
-  //----- note that L=10 * actual value, similarly l= l0* actual value
-  Ldig1 = L % 10;
-  Lint3 = L / 10;
-  ldig1 = l % 10;
-  lint3 = l / 10;  // when Ldig1=0, it means that L is a multiple of 10. similarly for 'l'
-  fltL = (float)L / 10.0;
-  fltl = (float)l / 10.0;
-  Kv = ScalcK(fltL, fltl);                                                     //
-  GUI_DrawRectangle(4, 96 + 16, 430, 140, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect 426x28
-  //if (n14==0) {lcd1.clear();  lcd1.setCursor(0,0);lcd1.print("Sr No ");  lcd1.setCursor(0,1);lcd1.print("L= "); lcd1.setCursor(9,1);lcd1.print("l= "); // Sr. no. etc.
-  //lcd1.setCursor(0,2);lcd1.print("K= ");}  // "Sr No" at (0,0), "L=" & "l=" at (0,1) &(11,1) & "K=" at (0,2)
-
-  GUI_DisNum(5, 124, n14 + 1, &Font16, WHITE, BROWN);
-  lcd1.setCursor(9, 0);
-  lcd1.print("     ");
-  lcd1.setCursor(10, 0);
-  lcd1.print(n14 + 1);  // Srl. No,.1st line, LSpcN2+1 (n14+1, for 1~n numbering
-  if (Ldig1 == 0) {
-    GUI_DisNum(40, 124, Lint3, &Font16, WHITE, BROWN);
-    lcd1.setCursor(2, 1);
-    lcd1.print("                 ");
-    lcd1.setCursor(2, 1);
-    lcd1.print("L=");
-    lcd1.print(Lint3);
-  }  // L integer, 2nd line lcd1.print("   ");posn-2
-  else {
-    dtostrf(fltL, 7, 1, st1);  // L-Float, 2nd line posn-2
-    GUI_DisString_EN(40, 124, &st1[0], &Font16, WHITE, BROWN);
-    lcd1.setCursor(2, 1);
-    lcd1.print("L=");
-    lcd1.print(fltL, 1);
   }
-  if (ldig1 == 0) {
-    GUI_DisNum(110, 124, lint3, &Font16, WHITE, BROWN);  // 'l'- integer,, 2nd line,posn-8
-    lcd1.setCursor(6, 1);
-    lcd1.print("l=");
-    lcd1.print(lint3);
-  } else {
-    dtostrf(fltl, 7, 1, st1);  // 'l'-, 2nd line,posn-8 float lcd1.print("   ");
-    GUI_DisString_EN(110, 124, &st1[0], &Font16, WHITE, BROWN);
-    lcd1.setCursor(6, 1);
-    lcd1.print("l=");
-    lcd1.print(fltl, 1);
-  }
-
-  dtostrf(Kv, 7, 2, st1);
-  GUI_DisString_EN(200, 124, &st1[0], &Font16, WHITE, BROWN);
-  lcd1.setCursor(11, 1);
-  lcd1.print("        ");
-  lcd1.setCursor(11, 1);
-  lcd1.print("K=");
-  lcd1.print(Kv, 2);  // Kv, 2nd line, posn-12
-  tRho = 5.4 * Kv;
-  lcd1.setCursor(2, 3);
-  lcd1.print("Rho=");
-  lcd1.print(tRho, 2);  // Rho in line-3
-  //lcd1.setCursor(10,0); lcd1.print(LSpcN2);  // updated val  //ue of Last spacing no.
-}
 //................................................................end of Show_Eprom3
 // show status of 4 keyboard pins Note: new name:-- 'Kb_Action'
 //----------------------------------------------------------------------------
 void Kb_Action() {
-  timr2++;
-  RetL2 = 0x41;  // xr4=50,yr4=150, im2=20, initially. m6 goes from 0~ im2(==20)
-                 //  if (timr2>= 5) {timr2=0;
-
-  volatile int xt1, xt2, yt1, yt2;
-  xt1 = xr4 + (12 * m6);
-  //---------------following statement was an error-----------
-  //lcd1.setCursor(0, 0); lcd1.print('F'); keyBf0 = 0;
-  //..........
-  if (keyBf0 != 0) {  //   some key has definnitly been pressed
-    lcd1.setCursor(0, 0);
-    lcd1.print(' ');                                                                                     // some key is pressed                                                                              // some key is presed
-    if (m6 >= im2) {                                                                                     // after 20 chars. are shown , m6 is made = 0
-      GUI_DrawRectangle(xr4 - 1, yr4 - 1, xr4 + im2 * 12, yr4 + 18, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect. for ~30 chars.
-      m6 = 0;
-    }
-    //}
-    //-------------------------------'F' key pressed---------------------------------------------------
-    if (keyBf0 == k_F) {  //Serial.println("F2 mode just set");
-      lcd1.clear();
-      lcd1.setCursor(m6, 2);
-      lcd1.print('F');
-      lcd1.setCursor(0, 0);
-      lcd1.print('F');
-      GUI_DisChar(xt1, yr4, 'F', &Font16, WHITE, BLUE);
-      kpr = 1;
-      Fpr = 'F';  // if (kpr=2) (F-Mode was G~P, it should go back to 'F' mode, when 'F' key is pressed
-      F_kpr = 1;
-      keyBf0 = 0;
-      m6++;  //  m6++ means cursor should advance (on Screen Lcd)just as it advaces on all other 15 keys
-    }
-
-    //..................................................'F' key over
-    //---------------------------------- for keys 1~9,'.'-- kpr should be == 1/2-------------------------------------
-    //----------------when we make keyBf0=0, we mean that the key has been honored ---------------------------------
-    else {        // now study keys other than 'F' i.e. 0~9,keys :--'.'previous,next,clear & save
-      F_kpr = 0;  //F_kpr{ is used in 10 milli-Second for flashin 'F' is now removed
-
-      if (keyBf0 == k_1) {
-        if (Fpr != 'L') {  //normal operation of key '1'
-          if (kpr == 1) {
-            lcd1.clear();
-            lcd1.setCursor(m6, 2);  //
-            //lcd1.write(0xE0);
-            lcd1.setCursor(0, 0);
-            lcd1.print("F1");
-            lcd1.setCursor(0, 1);
-            lcd1.print("for GPS (if module available");  //'alpha' show 'alpha' at(0,0) too. 'alpha' overwritten by 'entry_fnc_G()'
-            GUI_DisChar(xt1, yr4, '1', &Font16, WHITE, BLUE);
-            Fpr = 'F' + 1;  //'G' mode
-            kpr = 2;        // 'if (kpr==1)' is equivalent t0 'if (Fpr=='F''Function set' mode print '1'
-                            // Get_GPS();      // Reject_k();  //    entry_fnc_G();now cancelled--8/may/2023 'alpha' means 'GPS' mode, Fpr='G'
-            keyBf0 = 0;     //...............................................................
-          }
-        }
-      }
-      //----------'end of key '1' normal operation------------------------
-      //----------------begin  key-'1' operation for 'change of 'Schlumberger/enner/Dipole-Dipole mode---
-      if (keyBf0 == k_1) {
-        if (Fpr == 'L') {  // change to Sclumberger method'
-          if (kpr == 2) {  // note : 2 keys have been pressed
-            lcd1.clear();
-            lcd1.setCursor(m6, 2);  //
-                                    // lcd1.write(0xE0);
-            lcd1.setCursor(0, 0);
-            lcd1.print("Setting ");  //
-            lcd1.setCursor(0, 1);
-            lcd1.print("Schlumberger method");  //'
-            GUI_DisChar(xt1, yr4, '1', &Font16, WHITE, BLUE);
-            // do not change
-
-            Fpr = 'F' + 1;  //'G' mode
-            kpr = 2;        // 'if (kpr==1)' is equivalent t0 'if (Fpr=='F''Function set' mode print '1'
-            Surv_meth = 1;  // set Schlum meth0d
-
-            L_Init1();   // Get_GPS();      // Reject_k();  //    entry_fnc_G();now cancelled--8/may/2023 'alpha' means 'GPS' mode, Fpr='G'
-            keyBf0 = 0;  //...............................................................
-          }
-        }
-      }
-      // ------------------------------------------------------------
-      //------------------------------------ key 2 ----------------------------------------------------------------------------
-      if (keyBf0 == k_2) {  // normal operation of key '2'
-        if (Fpr != 'L') {
-          if (kpr == 1) {
-
-            lcd1.clear();
-            lcd1.setCursor(m6, 2);
-            // lcd1.print("F2");
-            lcd1.setCursor(0, 0);
-            lcd1.print("F2  key 2 pressed");  // F2'Sigma',  Earlier 'Beta'.
-            GUI_DisChar(xt1, yr4, '2', &Font16, WHITE, BLUE);
-            Fpr = 'F' + 2;  // Fpr <-- 'H'
-            kpr = 2;
-            kpr_key_2 = 2;  //keys 'F' &'2'are now pressed. now deteect this in key '9' operation
-            keyBf0 = 0;
-            Serial.println("key 2 pressed, after F");
-            entry_fnc_H();  //now Fpr='H','Sigma' normal Survey mode
-          }
-        }  //  ----set H-mode-----('F'+2)
-      }
-      //----------------begin  key-'2' operation for 'change of 'Schlumberger/enner/Dipole-Dipole mode---
-      if (keyBf0 == k_2) {
-        if (Fpr == 'L') {  //change Srvey mode
-          if (kpr == 2) {
-
-            lcd1.clear();
-            lcd1.setCursor(m6, 2);
-            // lcd1.print("F2");
-
-            lcd1.setCursor(0, 0);
-            lcd1.print("Setting ");  //
-            lcd1.setCursor(0, 1);
-            lcd1.print("Wenner method");  //
-            GUI_DisChar(xt1, yr4, '2', &Font16, WHITE, BLUE);
-            //  --- do not chang Fpr now
-            //Fpr = 'F' + 2;  // Fpr <-- 'H'
-            kpr = 2;
-            kpr_key_2 = 2;  //keys 'F' &'2'are now pressed. now deteect this in key '9' operation
-            Surv_meth = 2;  // set Wenner meth0d
-
-            L_Init1();  //
-            keyBf0 = 0;
-            Serial.println("change Survey mode");
-            //entry_fnc_H();  //now Fpr='H','Sigma' normal Survey mode
-          }
-        }  //  ----set H-mode-----('F'+2)
-      }
-      //................end of  key-'2' operation for 'change of 'Schlumberger/enner/Dipole-Dipole mode.....--
-      //-------------------key-'3'---------------------------------------------------------
-      if (keyBf0 == k_3) {  //mnormal key '3' operation
-        if (Fpr != 'L') {
-          if (kpr == 1) {
-            lcd1.setCursor(m6, 2);  //
-                                    // lcd1.print("F3");
-            lcd1.setCursor(0, 0);
-            lcd1.print("F3");
-            lcd1.print(" key 3 pressed");  //
-            GUI_DisChar(xt1, yr4, '3', &Font16, WHITE, BLUE);
-            kpr = 2;
-            Fpr = 'I';  // now Fpr = 'F'+3 (='I') is ,edit L,l, mode
-            print_save = 1;
-            entry_fnc_I();
-            keyBf0 = 0;
-          }
-        }  //  Reject_k(); keyBf0=0 means key-3 is honoured------  ----- now--------
-      }
-      //----------------begin  key-'3' operation for 'change of 'Schlumberger/enner/Dipole-Dipole mode
-      if (keyBf0 == k_3) {  //mnormal key '3' operation
-        if (Fpr == 'L') {
-          if (kpr == 2) {
-            lcd1.setCursor(m6, 2);  //
-                                    // lcd1.print("F3");
-            lcd1.setCursor(0, 0);
-            lcd1.print("Setting ");  //
-            lcd1.setCursor(0, 1);
-            lcd1.print(" Dipole method");  //
-            GUI_DisChar(xt1, yr4, '3', &Font16, WHITE, BLUE);
-            kpr = 2;  // no use
-                      // do not change Fpr now
-                      //Fpr = 'I';  // now Fpr = 'F'+3 (='I') is ,edit L,l, mode
-            print_save = 1;
-            Surv_meth = 3;  // set Wenner meth0d
-            L_Init1();      //entry_fnc_I();
-            keyBf0 = 0;
-          }
-        }  //  Reject_k(); keyBf0=0 means key-3 is honoured------  ----- now--------
-      }
-      //................end of  key-'3' operation for 'change of 'Schlumberger/enner/Dipole-Dipole mode.....--
-      //-------------------------------
-      //-------------------ket-'4'---------------------------------------------------------
-      if (keyBf0 == k_4) {
-        if (kpr == 1) {
-          lcd1.setCursor(m6, 2);
-          // lcd1.print("F4");
-          lcd1.setCursor(0, 0);
-          lcd1.print("F4");
-          lcd1.print(" key 4 pressed");  //'
-          GUI_DisChar(xt1, yr4, '4', &Font16, WHITE, BLUE);
-          Fpr = 'F' + 4;  // 'J' mode
-          kpr = 2;        // --set 'J' mode-- ('F'+4) ('Survey Status' mode)
-          entry_fnc_J();  // entry_fnc_J(), means: 'show  1st screen of Survey status'
-          keyBf0 = 0;
-        }
-      }
-      //-------------------key-'5'-----------------------------------------------------------
-      if (keyBf0 == k_5) {
-        if (kpr == 1) {
-          lcd1.setCursor(m6, 2);
-          // lcd1.print("F5");
-          lcd1.setCursor(0, 0);
-          lcd1.print("F5");
-          lcd1.print(" key 5 pressed");  //'
-
-          // 'Sigma',show 'Sigma' at(0,0)
-          GUI_DisChar(xt1, yr4, '6', &Font16, WHITE, BLUE);
-          Fpr = 'F' + 5;  //  'K' mode
-          kpr = 2;        //  --set 'L' mode-- ('F'+6)
-          L_Init1();      //Reject_k();
-          keyBf0 = 0;
-        }
-      }
-      //-----------------------key 6-------
-      //-------------------key-'6'-----------------------------------------------------------
-      if (keyBf0 == k_6) {
-        if (kpr == 1) {
-          lcd1.setCursor(m6, 2);
-          // lcd1.print("F6");
-          lcd1.setCursor(0, 0);
-          lcd1.print("F6");
-          lcd1.setCursor(0, 1);
-          lcd1.print("Setting L mode");  //'
-
-
-          // 'Sigma',show 'Sigma' at(0,0)
-          GUI_DisChar(xt1, yr4, '6', &Font16, WHITE, BLUE);
-          Fpr = 'F' + 6;  // 'L' mode
-          kpr = 2;        //  --set 'L' mode-- ('F'+6)
-          keyBf0 = 0;
-          L_Init1();  //Init1();  //Reject_k();
-        }
-      }
-      //----------------------key-7'----------------------------------------------------------------
-      if (keyBf0 == k_7) {  // key '7'
-        if (kpr == 1) {     // key 'F' was pressed prior to key '7'
-          lcd1.clear();
-          lcd1.setCursor(0, 0);
-          lcd1.print("F7 'M' mode");  //'Pye', show 'Pye' at(0,0) too lcd1.print('7');
-          GUI_DisChar(xt1, yr4, '7', &Font16, WHITE, BLUE);
-          Fpr = 'M';         // 'M' mode 'F'+ 7 ,  when 'F'is pressed followed by,'7'
-          kpr = 2;           //2.keys 'F' &  7 have been pressed
-          void enter_L_l();  //prove that values of L,l were stored correctly
-          //-----------------keyBf0 <-- is cancelled here-----------because of this.program will go thru Kb_Action
-          //magain bu this time it will execute t tcde patch
-
-          keyBf0 = 0;
-          //E2prom_get() ; // read RcBf_R1[16 bytes from EEPROM] calc_Batt() ;  // show received bytes on Serial Moniter   //Reject_k();
-        }
-      }
-      //---------------------key 7--again with if(kr==2)------------------
-
-      //........................end of key--again.........................
-      //----------------------key-'8'--------------------------------------------------------------------
-      if (keyBf0 == k_8) {
-        if (kpr == 1) {
-          lcd1.clear();
-          lcd1.setCursor(0, 0);
-          lcd1.print("F8 Edit L, l mode");  //'Rect.''DBh',show 'E-mirror' at(0,0) too,  lcd1.print('8');
-          GUI_DisChar(xt1, yr4, '8', &Font16, WHITE, BLUE);
-          Fpr = 'F' + 8;  // 'N'
-          kpr = 2;        //  --set 'N' mode-- ('F'+8)
-                          //-------------------------------key 2nd action--------------------------
-          lcd1.setCursor(5, 2);
-          lcd1.print("L(");
-          lcd1.print(EdSpc_No);
-          lcd1.print(")= ");
-          lcd1.print(pgm_read_word_near(PLt + EdSpc_No));
-          //pgm  (11)= 234 ");
-          //.................................end of ' 2nd action............
-          keyBf0 = 0;
-        }
-      }
-      //----------------------------key-'.'--this mode not to be used---------------------------------------------------
-      if (keyBf0 == k_dot) {
-
-        if (kpr == 1) {
-          lcd1.clear();
-          lcd1.setCursor(m6, 2);
-          lcd1.print("Fdot");
-          lcd1.setCursor(0, 0);
-          lcd1.print("Fdot");  //'Omicron',show 'Omicron' at(0,0) too,  lcd1.print('.');
-          GUI_DisChar(xt1, yr4, '.', &Font16, WHITE, BLUE);
-          Fpr = 'R';  // = 'P'
-          kpr = 2;    // ----'P' mode-- (not used)
-          keyBf0 = 0;
-          //Reject_k();  // presently, 'F'+ '.' does not deffine any function mode
-        }
-      }
-
-      //----------------------key-'9'--------------------------------------------------------------------
-
-      if (keyBf0 == k_9) {
-        if (kpr == 1) {
-          lcd1.clear();
-          lcd1.setCursor(m6, 2);
-          lcd1.print("F9");
-          lcd1.setCursor(0, 0);
-          lcd1.print("F9");
-          lcd1.print(" key 9 pressed");  //''E-mirror''D6h'' lcd1.print('9');
-          GUI_DisChar(xt1, yr4, '9', &Font16, WHITE, BLUE);
-          Fpr = 'F' + 9;  //  i.e. 'O' (oh) mode
-          kpr = 2;        // Fpr= 'O' ('Oh')
-                          //if (kpr_key_2 == 2)  Serial.println("key 9 pressed, after 'F' & '2' ");
-          keyBf0 = 0;
-        }
-      }
-      //----------------------key-''F' then key-2''-(now kpr=2 -& key '9'---------------------------------------------------------------
-      if (keyBf0 == k_9) {
-        if (kpr == 2) {  // note : now kpr=2
-          lcd1.clear();
-          lcd1.setCursor(5, 0);
-          lcd1.print("keys F,2,now , ");
-          lcd1.setCursor(0, 1);
-          lcd1.print("9 pressed");  //''E-mirror''D6h'' lcd1.print('9');
-          GUI_DisChar(xt1, yr4, '9', &Font16, WHITE, BLUE);
-          Fpr = 'P';  //'F' + 9;  // use Fpr ='P'
-          kpr = 2;    // Fpr= 'O' ('Oh')
-          fnc_Q2();   // turn On  AutoD
-          keyBf0 = 0;
-          //Reject_k();
-        }
-      }
-      //------------when key '0' follows 'F' key, 'Test' mode is defined ----------------------------------------
-      if (keyBf0 == k_zr) {
-        if (kpr == 1) {
-          lcd1.clear();
-          lcd1.setCursor(m6, 2);
-          lcd1.print("F0");
-          lcd1.setCursor(0, 0);
-          lcd1.print("F0");  // 'F0''tau-modified',show at (0,0) & (m6,2), lcd1.write(0xCE);
-          GUI_DisChar(xt1, yr4, '0', &Font16, WHITE, BLUE);
-          Fpr = 'F' + 11;  //= 'Q'
-
-          kpr = 2;     // Fpr= 'Q', Test mode. ('F'+11)
-          keyBf0 = 0;  // show 'Resistance' only. No L,l,K and 'Rho'
-        }
-      }
-      //..................................end of 'if (kpr==1)'.cases...........keys 1~8 & '0'..................
-      //.................................................................................................
-      //  ------ end of 'if (kpr not =0)' ---(but keys '9' & '0' not included in defining F-mode--------------------------------------
-      //  should use EEPRM.get EEPRPm.put (EEPROM.update)E2 to modify the value
-      //-------------  --------------
-      //--------------------------------- ----------------------------------------------------------------
-      // --- kpr==0 means that after 'Power On' the 'F" key has not yet been  pressed ----
-
-      //-----------------------show kpr(int), Fpr(char)-----------------------------------------------------------------------
-      // ---- the following 6-line block is executed when any key is pressed --------------------------      //
-      //.....................................................................................................................
-
-      if (keyBf0 == k_pr) {
-        if (kpr == 1) {
-          lcd1.clear();
-          lcd1.setCursor(0, 0);
-          lcd1.print("F8 Edit L, l mode");  //  -- do not print char'P' (for 'Previous' on screen & 20x4lcd1.print('P');
-          lcd1.setCursor(0, 1);
-          lcd1.print("Prev. key pressed");  //
-          lcd1.setCursor(3, 2);             //GUI_DisString_EN (xt1, yr4, "P", &Font16, WHITE, BLUE);-
-          if (Fpr != 'H' && Fpr != 'I' && Fpr != 'K' && Fpr != 'L') keyBf0 = 0;
-          Fpr = 'S';
-          if (Fpr == 'N') {
-            if (EdSpc_No >= 2) EdSpc_No--;
-            lcd1.print("L(");
-            lcd1.print(EdSpc_No);
-            lcd1.print(")= ");
-            lcd1.print(pgm_read_word_near(PLt + EdSpc_No));
-
-            kpr = 2;
-            keyBf0 = 0;
-          }
-        }
-      }  //   //minimumm EdSpc_No is 1
-         //...............................................................................................
-      if (keyBf0 == k_nx) {
-        if (kpr == 1) {
-          lcd1.clear();
-          lcd1.setCursor(0, 0);
-          lcd1.print("F8 Edit L, l mode");  //
-          lcd1.setCursor(0, 1);
-          lcd1.print("Next key pressed");
-
-          lcd1.setCursor(3, 2);  //  do not print char.N- for 'Next' lcd1.print('N');
-                                 //GUI_DisString_EN (xt1, yr4, "N", &Font16, WHITE, BLUE);  //
-                                 //  ++;  maximum value of,EdSpc_No is 36
-
-          if (Fpr != 'H' && Fpr != 'I' && Fpr != 'K') keyBf0 = 0;  //keyBf0 will be made 0 only if  'not' Survey/Edit L,l/Recal Reading mode
-          Fpr = 'T';
-          if (Fpr == 'N') {
-            if (EdSpc_No <= 35) EdSpc_No++;
-            lcd1.print("L(");
-            lcd1.print(EdSpc_No);
-            lcd1.print(")= ");
-            lcd1.print(pgm_read_word_near(PLt + EdSpc_No));
-          }
-          kpr = 2;
-          keyBf0 = 0;
-        }  //
-        kpr = 2;
-        keyBf0 = 0;
-      }
-      //....................................................
-      if (keyBf0 == k_cl) {
-        lcd1.clear();
-        lcd1.setCursor(m6, 2);
-        lcd1.print("Clear");
-        if (kpr == 1) {
-          Fpr = 'U';
-          // j3a<--0 is probably needed
-          GUI_DisString_EN(xt1, yr4, "C", &Font16, WHITE, BLUE);  // print char C for- 'Clear'
-          keyBf0 = 0;                                             //keyBf0 will be made 0 ,toward the end of Kb_Action
-        }
-      }
-      if (keyBf0 == k_sv) {  // for normal operation of key 'Save'
-        if (Fpr != 'I') {
-          lcd1.clear();
-          lcd1.setCursor(m6, 2);  //
-          lcd1.print("key: Save");
-          //GUI_DisString_EN (xt1, yr4, "S", &Font16, WHITE, BLUE);  // print char S for- 'Save'
-          if (Fpr != 'H' && Fpr != 'I') keyBf0 = 0;  // ( keyBf0 will not be made 0 in F2('Normal Survey'mode) and in F3(Edit L,l mode)
-        }
-      }
-      if (keyBf0 == k_sv) {  //operation of key in 'Edit mode'
-        if (Fpr == 'I') {    // key 'F'followed
-          lcd1.setCursor(0, 3);
-          lcd1.print("                   ");  // Erase entire line. char. posn.=0~19
-          lcd1.setCursor(0, 3);
-          lcd1.print("--Reading Saved--");                        // saved in EEPROM
-          GUI_DisString_EN(xt1, yr4, "S", &Font16, WHITE, BLUE);  // print char S for- 'Save'
-          if (Fpr != 'H' && Fpr != 'I') keyBf0 = 0;               //
-                                                                  // Commented out:-- entire line"if (Fpr != 'H' && Fpr != 'I') keyBf0 = 0;" date22/Jan/2025, Tuesday
-        }
-      }
-      // after taking the action for a key, keyBf0 is cleared to 0 , which means the action has been taken
-
-      m6++;  // advance the 'cursor' to next position
-    }
-    //  end of case: 'keys other than 'F' , i.e. ,0,~9 & 'dot' plus 'prev,next,clear & Save keys
-    //------i. e. end of last key ,namely key 'Save'
-
-    //---------------------------- '---------------
-    if (Fpr == 'M') {
-      if (kpr == 2) {
-        if (keyBf0 == k_2) {
-          enter_L_l();  // show lines 0 & 1
-          kpr = 3;
-          keyBf0 = 0;
-        }
-      }
-    }  //
-    // ----------- accept  0~9 keys-------------------------
-    if (Fpr == 'G') {
-      if (keyBf0 == k_2) {
-        fnc_G2();
-        keyBf0 = 0;
-      }  // if key-2 is pressed, get GPS readings
-      if (keyBf0 == k_3) {
-        fnc_G3();
-        keyBf0 = 0;
-      }  // if key-3 is pressed
-      if (keyBf0 == k_4) {
-        fnc_G4();
-        keyBf0 = 0;
-      }  // if key-4 is pressed
-    }    //  end of 'if Fpr=='G''
-         //.................................end of keys 2,3,4 actions for'G', GPS...................................
-    //...........................................end of keys 2,3 for 'GPS' (alpha)....................................
-    //===========--------------begn-'H',keys 2,3. for 'Normal Survey' mode-----------------------------------------------------
-    //-----------------------------------'H'-- keys 2,3,4,5 within 'Normal Survey' mode-------------------------------------------------
-    if (Fpr == 'H') {  // 'H', F+'2' 'Sigma',Normal Survey mode
-      if (keyBf0 == k_2) {
-        fnc_H2();
-        keyBf0 = 0;
-      }  // if key-2 is pressed, block
-      if (keyBf0 == k_3) {
-        fnc_H3();
-        keyBf0 = 0;
-      }  // if key-3 is pressed      //
-      if (keyBf0 == k_4) {
-        fnc_H4();
-        keyBf0 = 0;
-      }  // if key-4 is pressed
-
-      if (keyBf0 == k_pr) {
-        fnc_H_Prv();
-        keyBf0 = 0;
-      }                      // if key-'Previous' is pressed
-      if (keyBf0 == k_nx) {  // if key-'next' is pressed
-
-        fnc_H_Nxt();
-        keyBf0 = 0;
-      }
-      if (keyBf0 == k_6) {
-        fnc_H6();
-        keyBf0 = 0;
-      }  // if key-6 is pressed,like pressing F2, call entry_fnc_H
-      if (keyBf0 == k_9) {
-        Serial.println("F2 mode key-9 to be pressed");
-        fnc_H9();
-        keyBf0 = 0;
-      }  // if key-9 is pressed, turn on Auto-D
-    }    //  end of  Fpr=='H'
-         // . . . . . . . . . . . . . . . . . . . . . . . . . .       //
-
-    //.................................end of 'Normal Survey mode'..()................................
-    //...........................................end of keys 2,3 for 'H', Normal Survey mode..('Sigma.)....................................
-    //-----------------------------------'Q'--'Test mode, Resistance only'-------------------------------------------------
-    if (Fpr == 'Q') {
-      if (keyBf0 == k_6) {
-        fnc_Q1();
-        keyBf0 = 0;
-      }  // if key-6 is pressed, call entry_fnc_Q, like pressing 'F0'
-      if (keyBf0 == k_9) {
-        fnc_Q2();
-        keyBf0 = 0;
-      }  // if key-9 is pressed,   D27<-- '0' givng a pulse to turn on Auto_D
-    }    //  end of 'if Fpr=='Q'' */
-         //.................................end of keys 2,3 actions
-         //  /*
-    if (Fpr == 'K') {
-      if (keyBf0 == k_pr) {
-        fnc_K2();
-        keyBf0 = 0;
-      }  // if key-'previous'' is pressed, show previous reading
-      if (keyBf0 == k_nx) {
-        fnc_K3();
-        keyBf0 = 0;
-      }  // if key-'next' is pressed, show next reading
-    }    //  end of 'if Fpr=='Q'' */
-    //.................................end of keys 2,3 actions    void entry_fnc_K() {  }    // to be defined 'show Rdng_N0,L,Rho
-    //--------------------------------------- 'L'  select Survey mode-------------------
-    if (Fpr == 'L') {
-      if (kpr == 2) {
-        if (keyBf0 == k_1) {
-          L_Scr_Schlum();
-          keyBf0 = 0;
-        }  // if key '1' is pressed, set Schlumberger
-        if (keyBf0 == k_2) {
-          L_Scr_Wenn();
-          keyBf0 = 0;
-        }  // if key '2' is pressed, set Wenner method
-        if (keyBf0 == k_3) {
-          L_Scr_Dip();
-          keyBf0 = 0;
-        }  // if key '3' is pressed, set Dipole method
-        if (keyBf0 == k_4) {
-          L_No_change();
-          keyBf0 = 0;  //if key '4' is pressed,no change
-        }              //
-      }
-    }
-    //---------------------------- '---------------
-
-    //-----------------------------------------------------------------------------------
-    if (Fpr == 'J') {
-      if (keyBf0 == k_3) {
-        fnc_J3();
-        keyBf0 = 0;
-      }  // if key '3' is pressed, call fnc_J3(),close present Srvey
-         // if (keyBf0 == k_4) {
-      // fnc_J4();
-      //keyBf0 = 0;
-      //        }  //
-    }
-    //  end of 'if Fpr=='J''
-    //-----------------------------------'I'--'Edit L,l'-------------------------------------------------
-    if (Fpr == 'I') {
-      if (keyBf0 == k_nx) {
-        fnc_I2();
-        keyBf0 = 0;
-      }  // if key-next is pressed, get next readings
-      if (keyBf0 == k_pr) {
-        fnc_I3();
-        keyBf0 = 0;
-      }  //if key-'previous' is pressed
-      if (keyBf0 == k_1) {
-        fnc_I4();
-        keyBf0 = 0;
-      }  // if key-1 is pressed, L++
-      if (keyBf0 == k_4) {
-        fnc_I5();
-        keyBf0 = 0;
-      }  //if key-4 is pressed,L--
-      if (keyBf0 == k_2) {
-        fnc_I6();
-        keyBf0 = 0;
-      }  // if key-2 is pressed, l++
-      if (keyBf0 == k_5) {
-        fnc_I7();
-        keyBf0 = 0;
-      }  // if key-5 is pressed,l--
-      if (keyBf0 == k_dot) {
-        fnc_I9();
-        keyBf0 = 0;
-      }  // if key-'.' is pressed,l-- 'delta'= 0.1 m.'
-      if (keyBf0 == k_zr) {
-        fnc_I10();
-        keyBf0 = 0;
-      }
-      if (keyBf0 == k_sv) {
-        fnc_I8();
-        keyBf0 = 0;
-      }
-
-    }  //end 'if (Fpr=='I''
-
-    //...........................end of if (Fpr=='J').......................................................
-
-    //*************************************////////  // only kesy-3 & 4 honoured
-  }
+  
 }  // ...............end of Kb_Action............
 
 //----------------------------------Reject+k() function definition-----------------------------------
