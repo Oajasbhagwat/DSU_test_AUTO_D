@@ -50,10 +50,10 @@ void setup() {
   //Serial.println("Init Touch Pad...");   // following functions are declared in lcd_touch.h
   //TP_Init( Lcd_ScanDir );
   //TP_GetAdFac();
-  TP_Dialog();
-  GUI_DisString_EN(4, 5, "...Auto_DSU8..~5Jan'23  ", &Font12, Colr[4], BLUE);         // show Title of the project
-  GUI_DisNum(90, 50, i13 + 1, &Font12, Colr[6], BLUE);                                //
-  GUI_DrawRectangle(3, 4, 3 + (8 * 36), 4 + 14, Colr[3], DRAW_EMPTY, DOT_PIXEL_DFT);  // draw Rect. around above letters
+  //TP_Dialog();
+  // GUI_DisString_EN(4, 5, "...Auto_DSU8..~5Jan'23  ", &Font12, Colr[4], BLUE);         // show Title of the project
+  // GUI_DisNum(90, 50, i13 + 1, &Font12, Colr[6], BLUE);                                //
+  // GUI_DrawRectangle(3, 4, 3 + (8 * 36), 4 + 14, Colr[3], DRAW_EMPTY, DOT_PIXEL_DFT);  // draw Rect. around above letters
                                                                                       // ------Defined already earlier (Serial2.begin(9600);  // baud rate for GPS is 9600 )
   
   del1();
@@ -149,13 +149,13 @@ void loop() {
     i11 = 0;
     i13++;
 
-    GUI_DrawRectangle(2, 80, 2 + 12 * 4, 80 + 12, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect
-    GUI_DisNum(2, 80, i13, &Font12, Colr[7], BLUE);                                    //  show i13 each time i11 reaches 1000
-                                                                                       //Serial.println(i13);     //show i13 on 'Screen lcd' as well as Serial monitor
+    // GUI_DrawRectangle(2, 80, 2 + 12 * 4, 80 + 12, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect
+    // GUI_DisNum(2, 80, i13, &Font12, Colr[7], BLUE);                                    //  show i13 each time i11 reaches 1000
+    //                                                                                    //Serial.println(i13);     //show i13 on 'Screen lcd' as well as Serial monitor
 
-    i14 = i13 % 10;
-    GUI_DrawRectangle(2, 95, 2 + 12 * 4, 95 + 12, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect
-    GUI_DisNum(2, 95, i14, &Font12, Colr[7], BLUE);                                    //  show i14 each time i11 reaches 1000
+    // i14 = i13 % 10;
+    // GUI_DrawRectangle(2, 95, 2 + 12 * 4, 95 + 12, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect
+    // GUI_DisNum(2, 95, i14, &Font12, Colr[7], BLUE);                                    //  show i14 each time i11 reaches 1000
     //Serial.println(i14);  //
     // i14old updated
   }
