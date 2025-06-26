@@ -201,152 +201,12 @@ volatile float latitude, longitude;  // from
 //
 //extern volatile float vr2,vr3,vr4;
 
-/*************************************************
-        ******************************
-  
 
-/*******************************************************************************
-  function:
-        Paint the Delete key and paint color choose area
-*******************************************************************************/
-void TP_Dialog(void) {
-  LCD_Clear(Colr[7]);  // 7- Gainsboro,,4-Pale green
-  DEBUG("Drawing...\r\n");
-  //Horizontal screen display
-  if (sLCD_DIS.LCD_Dis_Column > sLCD_DIS.LCD_Dis_Page) {
-    //Clear screen
-    GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 60, 0,
-                     "CLEAR", &Font16, RED, BLUE);
-    //adjustment
-    GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 120, 0,
-                     "AD", &Font24, RED, BLUE);
-    //choose the color ( Actualyy, draw 5 coloured rectangles ) // Blue(dark) rect. 30x50
-    GUI_DrawRectangle(sLCD_DIS.LCD_Dis_Column - 30, 20,
-                      sLCD_DIS.LCD_Dis_Column, 70,
-                      BLUE, DRAW_EMPTY, DOT_PIXEL_1X1);
-    //GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 30, 30,"Close", &Font24, Colr[7], BLUE);   // close Survey
-    GUI_DrawRectangle(sLCD_DIS.LCD_Dis_Column - 30, 80,  // Green rect. 30x50
-                      sLCD_DIS.LCD_Dis_Column, 130,
-                      GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);
-    // GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 30, 145,"Open", &Font24, GREEN, BLUE);  // open new Survey
-    GUI_DrawRectangle(sLCD_DIS.LCD_Dis_Column - 30, 140,  // Red rect. 30x50
-                      sLCD_DIS.LCD_Dis_Column, 190,
-                      RED, DRAW_EMPTY, DOT_PIXEL_1X1);
-    // GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 30, 210,"Continue", &Font24, GREEN, BLUE);
-    GUI_DrawRectangle(sLCD_DIS.LCD_Dis_Column - 30, 200,  // Yellow rect. 30x50
-                      sLCD_DIS.LCD_Dis_Column, 250,
-                      YELLOW, DRAW_EMPTY, DOT_PIXEL_1X1);
-    GUI_DrawRectangle(sLCD_DIS.LCD_Dis_Column - 30, 260,  // Black rect. 30x50
-                      sLCD_DIS.LCD_Dis_Column, 310,
-                      BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);
-    //--------------------------------------------------now 8/April/2020 -----  old(16/oct/'18) ------
-    yr1 = 210;
-    if (Cap == 0) chr = ch2;
-    else chr = ch1;  // (ch1='A'(41h),ch2='a'(61h) )use 270 for only 1 line height of Font16.,use 210 for 4 lines
-    //    draw keyboard   //only 1 line -- A ~ K  {A~Z in (4 lines )}      ( 16 dots)
-    for (xr1 = 10; xr1 < 430; xr1 = xr1 + 40) {
-      GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);                  // 1st line
-      GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-      GUI_DisChar(xr1 + 7, yr1 + 4, chr, &Font16, WHITE, BLUE);
-      chr++;
-    }
-    yr1 += 30;  // (A~K)(11)chars
-    //GUI_DrawLine( 10, 160, 400 ,160 ,   BLUE, LINE_SOLID, DOT_PIXEL_1X1); // x-axis
-    //GUI_DrawLine( 10, 10,  10,260 ,   BLUE, LINE_SOLID, DOT_PIXEL_1X1);  // y-axis
-    //   -----------------------8/april/2020  -  -----------------------------
 
-    for (xr1 = 10; xr1 < 430; xr1 = xr1 + 40) {
-      GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);                  // 2nd line
-      GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-      GUI_DisChar(xr1 + 7, yr1 + 4, chr, &Font16, WHITE, BLUE);
-      chr++;
-    }
-    yr1 += 30;  // (L~V) 11 chars
-
-    for (xr1 = 10; xr1 <= 290; xr1 = xr1 + 40) {
-      GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);                  // 3rd line
-      GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-      GUI_DisChar(xr1 + 7, yr1 + 4, chr, &Font16, WHITE, BLUE);
-      chr++;
-    }  //   (W~Z),(7) chars
-
-    GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);
-    xr1 += 40;                                                                                          // only a blank rectangle. xr1=40 for next key
-    GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-    x5 = 20;
-    y5 = 40;
-    // ----------------------------------------------------8/april/2020----
-    // GUI_DisNum (x5,y5+30,5278,&Font16, WHITE,BLUE );  // for testing 'display  an integer'
-    dtostrf(vr1, 7, 3, st1);
-    vr2 = vr1 / 2.5;  // vr2 not used
-    //vr2 = -( ( (27.0/KNm)+0.030) ); dtostrf (vr2,9,4,st2);    // for testing 'display  a float number'
-    //GUI_DisString_EN (x5+10+80,y5-15, &st1[0], &Font16, WHITE,BLUE);    // show vr1   // */
-    /*  //  show vr2  */
-
-    //    ---------------- 8/April/2020  -----------------------
-    /*  // show "Frq+, Frq-
-      n2=n1; GUI_DisNum (70,100,n9, &Font16, WHITE,BLUE);
-           GUI_DisNum (70,145,n10, &Font16, WHITE,GRED);
-      GUI_DisString_EN (5,y6, "Frq-" ,&Font16, WHITE,BLUE);
-      GUI_DisString_EN (5,y6+20, "Frq+",&Font16,WHITE,BLACK);
-    */
-    //   -----------------------------------------------------
-    //    -------following initialization is done in Setup() . So it is not neede here
-    // PORTA = 0x80; PrC=0x07; PORTC = PrC; wrt_Pr();     // define all 3 ports of 8255 (on A4-D1 card) as output ports
-    // key-'k', 8255-A1,A0 <-- 11b , 'command' 80h   written into 8255
-
-    //============================================================================
-  } else {  //Vertical screen display
-    GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 60, 0,
-                     "CLEAR", &Font16, RED, BLUE);
-    GUI_DisString_EN(sLCD_DIS.LCD_Dis_Column - 120, 0,
-                     "AD", &Font24, RED, BLUE);
-    GUI_DrawRectangle(20, 20, 70, 70, BLUE, DRAW_FULL, DOT_PIXEL_1X1);
-    GUI_DrawRectangle(80, 20, 130, 70, GREEN, DRAW_FULL, DOT_PIXEL_1X1);
-    GUI_DrawRectangle(140, 20, 190, 70, RED, DRAW_FULL, DOT_PIXEL_1X1);
-    GUI_DrawRectangle(200, 20, 250, 70, YELLOW, DRAW_FULL, DOT_PIXEL_1X1);
-    GUI_DrawRectangle(260, 20, 310, 70, BLACK, DRAW_FULL, DOT_PIXEL_1X1);
-  }
-}
 // ---------------------------------------------------
 // --    draw keyboard  a~z or A~Z
 // ......................................................
-void Dr_Kb()  // draw keyBoard
-//......................................................................................................................
-{
-  yr1 = 210;
-  if (Cap == 0) chr = ch2;
-  else chr = ch1;  // use 270 for only 1 line height of Font16 is 16 dots ch1='A', ch2='a'
-  for (xr1 = 10; xr1 < 430; xr1 = xr1 + 40) {
-    GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);                  // 1st line
-    GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-    GUI_DisChar(xr1 + 7, yr1 + 4, chr, &Font16, WHITE, BLUE);
-    chr++;
-  }
-  yr1 += 30;  // (A~K)(11)chars
-  //GUI_DrawLine( 10, 160, 400 ,160 ,   BLUE, LINE_SOLID, DOT_PIXEL_1X1); // x-axis
-  //GUI_DrawLine( 10, 10,  10,260 ,   BLUE, LINE_SOLID, DOT_PIXEL_1X1);  // y-axis
-  //   -----------------------8/april/2020  -  -----------------------------
-
-  for (xr1 = 10; xr1 < 430; xr1 = xr1 + 40) {
-    GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);                  // 2nd line
-    GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-    GUI_DisChar(xr1 + 7, yr1 + 4, chr, &Font16, WHITE, BLUE);
-    chr++;
-  }
-  yr1 += 30;  // (L~V) 11 chars
-
-  for (xr1 = 10; xr1 <= 290; xr1 = xr1 + 40) {
-    GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);                  // 3rd line
-    GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-    GUI_DisChar(xr1 + 7, yr1 + 4, chr, &Font16, WHITE, BLUE);
-    chr++;
-  }  //   (W~Z),(7) chars
-
-  GUI_DrawRectangle(xr1, yr1, xr1 + 30, yr1 + 25, GREEN, DRAW_EMPTY, DOT_PIXEL_1X1);
-  xr1 += 40;                                                                                          // only a blank rectangle. xr1=40 for next key
-  GUI_DrawRectangle(xr1 - 1, yr1 - 1, xr1 + 30 + 1, yr1 + 25 + 1, BLACK, DRAW_EMPTY, DOT_PIXEL_1X1);  // Black border
-}
+// 
 // ................................end of drw KeyBoard ,,,,,,,,,,,,,,,,,,,
 
 /*...................................................................
@@ -370,14 +230,14 @@ void A4_Init() {
   //-- done later at line 831 A1PowN= digitalRead(40); A1Powold= A1PowN ; if ( A1Powold== 0 && A1PowN== 1) n20=0; // initialization of n20,--- =1 means ,A1 card is presently powered on -----
   // A1PowN=1 means A1 is presently powere on. So keyboard scanning does not interfere with 'read Seriai2'
   //----------------------------following 6 lines are used to indicate that Auto-C is powered On----------------------
-  if (A1PowN == 1) {
-    GUI_DrawRectangle(420 - 1, 30 - 1, 420 + 1 * 16, 30 + 32, Colr[7], 1, DOT_PIXEL_DFT);  // erase  rect.A1 card is on,disable keyb. scanning
-    GUI_DisNum(420, 46, 2, &Font16, Colr[7], RED);
-  }  //n
-  else {
-    GUI_DrawRectangle(420 - 1, 30 - 1, 420 + 1 * 16, 30 + 32, Colr[7], 1, DOT_PIXEL_DFT);  // erase  rect. A1 card is off. Let keyb. scanning be enabled
-    GUI_DisNum(420, 30, 1, &Font16, Colr[7], BLUE);
-  }  //
+  // if (A1PowN == 1) {
+  //   GUI_DrawRectangle(420 - 1, 30 - 1, 420 + 1 * 16, 30 + 32, Colr[7], 1, DOT_PIXEL_DFT);  // erase  rect.A1 card is on,disable keyb. scanning
+  //   GUI_DisNum(420, 46, 2, &Font16, Colr[7], RED);
+  // }  //n
+  // else {
+  //   GUI_DrawRectangle(420 - 1, 30 - 1, 420 + 1 * 16, 30 + 32, Colr[7], 1, DOT_PIXEL_DFT);  // erase  rect. A1 card is off. Let keyb. scanning be enabled
+  //   GUI_DisNum(420, 30, 1, &Font16, Colr[7], BLUE);
+  // }  //
   //......................................................................
   //---------------------------------------------------------------L
   tlim2 = 800 / 4;
@@ -539,16 +399,7 @@ void A4_Init() {
   //lcd1.setCursor(11, 1);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); lcd1.setCursor(16, 1);lcd1.print("Rd"); lcd1.print(LRdSr2 + 1); // last reading Sr. No.
   for (m7 = 0; m7 <= 8; m7++) FName2[m7] = Str11[m7];
   //lcd1.setCursor(0, 2);lcd1.print("FNme");lcd1.print(Str11); // copy const string 'Str11' into const 'char' array
-  GUI_DrawRectangle(50, 160, 50 + 9 * 12, 180 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect
   //-------show new names ----------------------------------------------
-  // /*
-  GUI_DisString_EN(165, 187, FName2, &Font12, YELLOW, BROWN);  // SHOW File name
-  GUI_DisString_EN(165, 175, "LSpcN2", &Font12, YELLOW, BROWN);
-  GUI_DisNum(240, 175, LSpcN2 + 1, &Font16, YELLOW, BROWN);  // show LSpcN2(new name)Last Spacing no.
-  GUI_DisString_EN(270, 175, "LRdSr2", &Font12, YELLOW, BROWN);
-  GUI_DisNum(360, 175, LRdSr2 + 1, &Font16, YELLOW, BROWN);  // show LRdSr2(new name)Last Rdg.no.
-  GUI_DisString_EN(385, 175, "EAd5", &Font12, YELLOW, BROWN);
-  GUI_DisNum(435, 175, EAd5, &Font16, YELLOW, BROWN);  // EAd5: L & l are stored fom hereonward
                                                        //   */
                                                        //---------------------------------------------------------------
   del1();
@@ -674,117 +525,7 @@ void A4_Init() {
   //
   //  ---------------------------------------------------------------
   // .............Read files using 'dir.openNextFile .......------------------------------------
-  /*
-    Serial.print("  SD --- 1  ");
-            ch11= 'A' ;          //File root;
-      myF = SD.open( "Srv3.csv",FILE_READ) ;      // earlier tried "srv3.csv"
-              //if (myF)   {myF.rewindDirectory(); File entry,dir; entry= dir.openNextFile(); Serial.print(entry.name() );}
-       if (myF) {    Serial.print("Srv3.csv") ; sz1=0; tsz1=myF.size(); Serial.print("file size = "); Serial.print(tsz1); Serial.print("   ");     // while (ch11 != 0xFF)    // 1{ FFh is 'EOF', End Of File     
-                    while (sz1 < tsz1-4)
-                 {   while (ch11 != 0x0A  )      // // 2{ 0Dh is CR, 'Carriage return'      
-           { ch11=myF.read(); sz1++; if(ch11>='0' && ch11 <='9') {ch10=ch11-'0'; Serial.print(ch10,HEX); }        //  {3Serial.print(" ");
-                 if (ch11==',')Serial.print(","); if (ch11=='.')Serial.print("."); if (ch11==0x0D)Serial.print("[");     //
-                 if (ch11==0x0A) {Serial.print("] ");Serial.print("size = "); Serial.print(sz1); Serial.println("  "); }
-                 }       //ch11=myF.read();
-                ch11 = 'A'; // purposely alter value of ch11 from oAh to some other value
-              }    //  end of keep repeating if (sz1 < tsz1-3 
-               
-              }  //.end of 'if myF=.true
-          else Serial.println("unable to open file 'SRV3.csv' ") ;  
-    Serial.print("SD End- 2---");
-             myF.close();
-             */
-  //---------------------------------------------------print 'program memory constants on Serial monitor-----------------
-  /*
-            for (n21=0; n21<=3; n21++)      // print 4 pairs L,l (10* values)
-    {n22= pgm_read_word_near (PLt+n21) ;     n23= pgm_read_word_near (Plt+n21) ;  Serial.print("n22 = "); Serial.print(n22); Serial.print("n23 = "); Serial.print(n23);  }
-                */
-  //..................................................................end of Program memory constants......
-
-  //-----------------------------------write 'Spacing table 'Spc5.csv' file on SD-----------------------------------------------
-  /*
-                 if (wrLlSD==1)
-                 //  /*
-           {myF= SD.open("Spc5.csv", FILE_WRITE );    
-           if (myF) 
-           {   myF.flush(); myF.seek(0); Serial.println("Spc5.csv opened ----1 ");          // for (n1=0; n1<=37; n1++)
-             {       for (n21=11; n21<=37; n21++)               // write 5 sets of L,l from program memory
-               { n22= pgm_read_word_near (PLt+n21) ; fltLv= (float)n22/10; n23= pgm_read_word_near (Plt+n21) ; fltlv = (float) n23/10;  // n15 ignored
-                      
-                           //Serial.print("n22 = "); Serial.print(n22); Serial.print("n23 = "); Serial.print(n23);
-                       myF.print (fltLv) ;myF.print (",") ; myF.println (fltlv) ; }  // 4 records: L,l thrn (Enter) CR,LF
-                 
-                     tsz1=myF.size(); Serial.print(" file size = "); Serial.print(tsz1); Serial.print("  ");
-                myF.close(); }
-           }
-            else Serial.println (" file Spc5.csv could not be opened ---2 ");  myF.close();
-           }  
-                        */
-  //.........................................end of write file Spc5.csv ..on SD.......
-
-  //------------------------cancelled: 'writing Wenner data on SD'-----------write 'Spacing table 'WSpc.csv' file on SD--(for Wenner method)---------------------------------------------
-  /*
-                 if (wrLlSD==1)
-                 //  /*
-           {myF= SD.open("WSpc2.csv", FILE_WRITE );    
-           if (myF) 
-           {   myF.flush(); myF.seek(0); Serial.println("WSpc2.csv opened (writing)----1 "); amax= sizeof(Wennat)/sizeof(Wennat[0] );         // for (n1=0; n1<=37; n1++)
-             {       for (n21=0; n21<=amax-1; n21++)               // write 5 sets of L,l from program memory
-               { n22= pgm_read_word_near (Wennat+n21) ; vr4= (float)n22/10; // vr4= float value for 'a' of Srl. no. n21
-                         // n23= pgm_read_word_near (Plt+n21) ; fltlv = (float) n23/10;  // Not for Wenner method
-                      
-                           //Serial.print("n22 = "); Serial.print(n22); Serial.print("n23 = "); Serial.print(n23);
-                       myF.print (n21+1) ;myF.print (",") ; myF.println (vr4) ; }  // 4 records: L,l thrn (Enter) CR,LF
-                 
-                     tsz1=myF.size(); Serial.print(" file size = "); Serial.print(tsz1); Serial.print("  ");
-                myF.close(); }
-           }
-            else Serial.println (" file WSpc2.csv could not be opened(writing) ---2 ");  myF.close();
-           }  
-                       // */
-  //.........................................end of write file Spc5.csv ..on SD.......
-  //--------Cancelled : 'Reading SD & ouputting on Serial monitor'  Below: read SD data unconditioally ----------
-  /*
-                // read SD data unconditionally
-              myF= SD.open("WSpc2.csv", FILE_READ );
-               if (myF) { myF.seek(0); sz1=0; Serial.println("WSpc2.csv opened for verifying----3");
-                  tsz1=myF.size(); Serial.print(" file size = "); Serial.print(tsz1); Serial.print("  ");
-                while (sz1 < tsz1-3)
-                 {  ch11=myF.read(); sz1++; if(ch11>='0' && ch11 <='9') {ch10=ch11-'0'; Serial.print(ch10,HEX); }        //  {3Serial.print(" ");
-                 if (ch11==',')Serial.print(","); if (ch11=='.')Serial.print("."); if (ch11==0x0D)Serial.print("[");     //
-                 if (ch11==0x0A) {Serial.print("] "); Serial.print("size ");Serial.println(sz1);} if (ch11==0xFF) {Serial.println("EOF");Serial.print(" size = "); Serial.print(sz1); Serial.println("  "); }  
-                  } // end of 'while (sz1<tsz1-3)             
-               }  // end of 'if (myF)
-         else Serial.println (" file WSpc2.csv could not be opened(for read & vrify) --- 4");
-        myF.close();
-                       //  */
-  //.............................................end of 'write Spacing table on SD.................................
-
-  /*
-            // open "Spc2.csv" for reading & print all chars till FFh-----------------------
-            ch11= 'A';   // some non-'LF', non FFh char
-         myF=SD.open ("Spc2.csv", FILE_READ);  
-          if (myF)  {    Serial.print("Spc2.csv opened") ; sz1=0; tsz1=myF.size(); Serial.print("file size = "); Serial.print(tsz1); Serial.print("   "); //file name & size
-                    while (ch11 != 0xFF)
-                 {  ch11=myF.read(); sz1++; if(ch11>='0' && ch11 <='9') {ch10=ch11-'0'; Serial.print(ch10,HEX); }        //  {3Serial.print(" ");
-                 if (ch11==',')Serial.print(","); if (ch11=='.')Serial.print("."); if (ch11==0x0D)Serial.print("[");     //
-                 if (ch11==0x0A) Serial.print("] "); if (ch11==0xFF) {Serial.print("EOF");Serial.print(" size = "); Serial.print(sz1); Serial.println("  "); }  
-                  } // end of 'if (ch11 != FFh'
-                 }   // end of 'if myF  
-                 else Serial.println (" file Spc2.csv could not be opened");
-                 myF.close(); 
-                       */
-  // open "Spc2.csv" for closing the file-----------------------
-  //-------------------read Schlumberger & Wenner spacings from EEPROM & show on Serial monitor
-  /*         
-     Serial.println();     // ---Schlumbergerr spacings below -------
-     for (i1=0; i1<=37; i1++) {tEA = EAd4+ i1*4; EEPROM.get ( tEA, n21); Serial.print("-n21-"); Serial.print(n21);  // show on Serial monitor screen
-     tEA+=2; EEPROM.get( tEA, n22 ); Serial.print(","); Serial.print(n22);Serial.print("* "); if (i1==10 ||i1==20 ||i1==30) Serial.println(); }  //EAd4=160,38 sets       
-         //--------Wenner spacings below------------
-    for (i1=0; i1<=22; i1++) {tEA = EAd5+ i1*2;  Serial.print("-i1-"); Serial.print(i1+1); Serial.print(",");
-    EEPROM.get ( tEA, n23);      Serial.print(n23);  // show on Serial monitor screen
-       Serial.print("*"); if (i1==10 ||i1==20 ||i1==30) Serial.println(); }  //EAd4=160,38 sets 
-          */
+ 
 }
 
 // ............. ..................................end of A4_Init  ..............................
@@ -813,10 +554,10 @@ unsigned int key_prsd_val1(byte keyBf0) {  //
 //      User uses this function to enter a new value for 'L' or 'l' like 0.6 601.2 meter & storemin
 //    ------
 void enter_L_l() {
-  lcd1.setCursor(0, 0);
-  lcd1.print("vary the value ");
-  lcd1.setCursor(5, 1);
-  lcd1.print("of L & l");
+  // lcd1.setCursor(0, 0);
+  // lcd1.print("vary the value ");
+  // lcd1.setCursor(5, 1);
+  // lcd1.print("of L & l");
 }
 //...................................................'end of function  "enter_L_l "  .................
 //----------------------------- 18/January/2024--------------
@@ -941,15 +682,8 @@ void calc_Batt() {
   //ln8 = (RcBf_R1[6] * 0x100) + RcBf_R1[5];
   BattV = (float)ln8 / 100.0;
   dtostrf(BattV, 5, 2, st1);                                                         // Batt Volt e.g. 12.83, RcBf_R1[7] expected to be 0
-  GUI_DrawRectangle(10, 180, 10 + 60, 180 + 13, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect 60x13
-  GUI_DisString_EN(10, 180, &st1[0], &Font12, Colr[7], BLUE);                        // Batt. Voltage
-                                                                                     //-------------- do not clear entire lcd ----------------------------
-  lcd1.setCursor(0, 0);
-  if (Fpr == 'Q') lcd1.print("F0");
-  if (Fpr == 'H') lcd1.print("F2");
-  if (Fpr == 'J') lcd1.print("F4");
-  lcd1.setCursor(13, 0);
-  lcd1.print("B=");
+   lcd1.setCursor(10, 0);
+  lcd1.print("BH=");
   lcd1.print(BattV, 2);  // now,'Sigma',1lcd1.clear();show at (13,0) B=12.68
   lcd1.setCursor(0, 3);
   lcd1.print("                   ");  // erase line-3 (press measure)
@@ -958,24 +692,24 @@ void calc_Batt() {
   Range_Sw = RcBf_R1[3];
   Cycl_Sw = RcBf_R1[4];
   if (RcBf_R1[3] == 1)  // Range Switch on 'Batt' posn.
-  {
-    lcd1.setCursor(0, 3);
-    lcd1.print("Cur Sw:");
-    if (Curr_Sw <= 7) { lcd1.print("Auto pres F0"); }  // curr_Sw: line-3
-    else
-      lcd1.print("Error");
-    lcd1.setCursor(0, 1);
-    lcd1.print("Range Sw:");
+   {
+  //   lcd1.setCursor(0, 3);
+  //   lcd1.print("Cur Sw:");
+  //   if (Curr_Sw <= 7) { lcd1.print("Auto pres F0"); }  // curr_Sw: line-3
+  //   else
+  //     lcd1.print("Error");
+  //   lcd1.setCursor(0, 1);
+  //   lcd1.print("Range Sw:");
     if (Range_Sw == 1) lcd1.print("Bat      ");  //Line-1: Range switch
     if (Range_Sw >= 2 && Range_Sw <= 4) lcd1.print("Resist");
-    if (Range_Sw == 5 || Range_Sw == 6) lcd1.print("S.P.");
+    //if (Range_Sw == 5 || Range_Sw == 6) lcd1.print("S.P.");
     if (Range_Sw >= 7) lcd1.print("Error");
     lcd1.setCursor(0, 2);
-    lcd1.print("Cycl Sw:");
-    if (Cycl_Sw <= 4) {
-      lcd1.print(Cycls[Cycl_Sw - 1]);
-      lcd1.print(" cycl");
-    } else lcd1.print("Error");  //
+   // lcd1.print("Cycl Sw:");
+    // if (Cycl_Sw <= 4) {
+    //   lcd1.print(Cycls[Cycl_Sw - 1]);
+    //   lcd1.print(" cycl");
+    // } else lcd1.print("Error");  //
                                  // Line-2   Cycls Switch  posn.==1,2,3,4 means 1,4,16,64 cycles respectively
   }
 }
@@ -984,56 +718,56 @@ void calc_Batt() {
 //--------------------------------------------------------------
 //     show Status of Current
 //---------------------------------------------------------------------------
-void curr_Status() {
-  Serial.println("curr_Status_Start");
-  if (RcBf_R1[17] == 1) IeStat = 0;
-  else IeStat = 1;  // IeStat =0, means 'current not flowing
-  //y7=60;
-  if (IeStat == 1) {  // Current flowing ok
-    IeNo2 = RcBf_R1[18];
-    GUI_DrawRectangle(110, y7 + 30, 110 + 136, y7 + 60 + 13, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect *8= length of 17*8cha  for ' no current
+// void curr_Status() {
+//   Serial.println("curr_Status_Start");
+//   if (RcBf_R1[17] == 1) IeStat = 0;
+//   else IeStat = 1;  // IeStat =0, means 'current not flowing
+//   //y7=60;
+//   if (IeStat == 1) {  // Current flowing ok
+//     IeNo2 = RcBf_R1[18];
+ //   GUI_DrawRectangle(110, y7 + 30, 110 + 136, y7 + 60 + 13, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect *8= length of 17*8cha  for ' no current
     //GUI_DisString_EN (70, y7 + 30 , "--- current"  , &Font12, WHITE, BLUE); //
 
-    GUI_DisNum(55, 180, IeMag2[IeNo2], &Font12, WHITE, BLUE);  // Current switch(byte 2)CurrMag[i] (i is 0~6 (not 1~7)
+   // GUI_DisNum(55, 180, IeMag2[IeNo2], &Font12, WHITE, BLUE);  // Current switch(byte 2)CurrMag[i] (i is 0~6 (not 1~7)
                                                                //GUI_DisString_EN (170 + 50, y7 + 30 ,  "mA flowing OK --", &Font12, WHITE, BLUE);
                                                                //  Batt Volt.shown at (2,2) in calc_Batt
                                                                //--------------------------------------------------------------------------------------------------
-    if (Fpr != 'Q' && Range_Sw != 1) Show_LlK();               // 'show L,l K on line 1,' is blocked , if in 'Test' mode or if in Batt posn.
+//    if (Fpr != 'Q' && Range_Sw != 1) Show_LlK();               // 'show L,l K on line 1,' is blocked , if in 'Test' mode or if in Batt posn.
 
     //     but later line 0 will be overwritten by the followin 2 lines
     //.................................................................................................
     //lcd1.setCursor(0, 0); lcd1.print("B="); lcd1.print(BattV, 2);    // Batt Volt will be overwritten by Current
-    lcd1.setCursor(13, 0);
-    lcd1.print("I=");
-    lcd1.setCursor(15, 0);
-    lcd1.print("     ");
-    lcd1.setCursor(15, 0);
-    lcd1.print(IeMag2[IeNo2]);
-    lcd1.print("mA");  // first erase 15~19,then current magnitude
-    lcd1.setCursor(0, 0);
-    if (Fpr == 'Q') lcd1.print("F0");
-    if (Fpr == 'H') lcd1.print("F2");
-    if (Fpr == 'J') lcd1.print("F4");
+    // lcd1.setCursor(13, 0);
+    // lcd1.print("I=");
+    // lcd1.setCursor(15, 0);
+    // lcd1.print("     ");
+    // lcd1.setCursor(15, 0);
+    // lcd1.print(IeMag2[IeNo2]);
+    // lcd1.print("mA");  // first erase 15~19,then current magnitude
+    // lcd1.setCursor(0, 0);
+    // if (Fpr == 'Q') lcd1.print("F0");
+    // if (Fpr == 'H') lcd1.print("F2");
+    // if (Fpr == 'J') lcd1.print("F4");
     //    if (Fpr!='Q')
     //{ lcd1.setCursor(1, 0);lcd1.print("2");}  // now, 'Sigma',2 lcd1.setCursor(8, 0);  lcd1.print("           ");
     // else { lcd1.setCursor(0, 0);lcd1.write(0xCE);lcd1.print("2");}  // CEh is 'T-modified'
-  }  //
+  //}  //
 
-  else {                                                                                        // IeStat==0,means 'No current'
-    GUI_DrawRectangle(70, y7 + 30, 70 + 240, y7 + 30 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase 'current flowing ok'
-    GUI_DisString_EN(110, y7 + 30, "---- No Current--", &Font12, WHITE, RED);                   // current is not flowing
-    lcd1.setCursor(8, 0);
-    lcd1.print("-No Curr--- ");
-    lcd1.setCursor(3, 1);
-    lcd1.print("mode");
-    lcd1.setCursor(0, 3);
-    lcd1.print("-check connections-");
-    tn1 = 0;
-    tn2 = 0;
-    t_transf = 0;  // So DSU knows that Auto_D will now turn off
-  }
-  Serial.println("curr_Status_End");
-}
+  //else {                                                                                        // IeStat==0,means 'No current'
+    // GUI_DrawRectangle(70, y7 + 30, 70 + 240, y7 + 30 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase 'current flowing ok'
+    // GUI_DisString_EN(110, y7 + 30, "---- No Current--", &Font12, WHITE, RED);                   // current is not flowing
+    //lcd1.setCursor(8, 0);
+    //lcd1.print("-No Curr--- ");
+//     lcd1.setCursor(3, 1);
+//     lcd1.print("mode");
+//     lcd1.setCursor(0, 3);
+//     lcd1.print("-check connections-");
+//     tn1 = 0;
+//     tn2 = 0;
+//     t_transf = 0;  // So DSU knows that Auto_D will now turn off
+//   }
+//   Serial.println("curr_Status_End");
+ //}
 //................................................................end of 'curr_status'.........................
 //---------------------------------------------------------------------------------------------------
 // Get L,l & K
@@ -1066,62 +800,62 @@ void Show_LlK(void) {
   }      // "Sr No" at (0,0), "L=" & "l=" at (0,1) &(11,1) & "K=" at (0,2)
         */
                                                              //.............................................................................
-    GUI_DisNum(10, 130, LSpcN2 + 1, &Font16, WHITE, BROWN);  //lcd1.setCursor(8, 0);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); // Srl. No,.1st line
+    //GUI_DisNum(10, 130, LSpcN2 + 1, &Font16, WHITE, BROWN);  //lcd1.setCursor(8, 0);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); // Srl. No,.1st line
     lcd1.clear();
-    lcd1.setCursor(0, 0);
-    lcd1.print("F2");
-    lcd1.print(" Rd");
-    lcd1.print(LRdSr2 + 1);
-    lcd1.print("  Sp");
+    // lcd1.setCursor(0, 0);
+    // lcd1.print("F2");
+    // lcd1.print(" Rd");
+    // lcd1.print(LRdSr2 + 1);
+    // lcd1.print("  Sp");
     //lcd1.setCursor(10,0); lcd1.print("    "); lcd1.setCursor(10,0);
-    if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-    else lcd1.print(LSpcN2);  // //F6h is 'Sigma',4,Rd,Sp
+    // if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
+    // else lcd1.print(LSpcN2);  // //F6h is 'Sigma',4,Rd,Sp
                               //'Sigma'4,Reading no. & Spacing no (1~N numbering)
 
-    GUI_DrawRectangle(10, 130, 70 + 240, 130 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase earlier Graphics screen
+    //GUI_DrawRectangle(10, 130, 70 + 240, 130 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase earlier Graphics screen
                                                                                         //--------------------------Next: L= at (0,1), l= at (6,1), K= at (11,1)------------------------------------
-    Ldig1 = Lint1 % 10;                                                                 //ldig1 = lint1 % 10;
-    if (Ldig1 == 0) Lint3 = Lint1 / 10;
+    // Ldig1 = Lint1 % 10;                                                                 //ldig1 = lint1 % 10;
+    // if (Ldig1 == 0) Lint3 = Lint1 / 10;
 
-    if (Ldig1 == 0) {
-      GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-      lcd1.setCursor(0, 1);
-      lcd1.print("L=");
-      lcd1.print(Lint3);
-    }  // L integer, 2nd line
+    // if (Ldig1 == 0) {
+    //   //GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
+    //   lcd1.setCursor(0, 1);
+    //   lcd1.print("L=");
+    //   lcd1.print(Lint3);
+    // }  // L integer, 2nd line
 
-    else {
-      dtostrf(fltLv, 7, 1, st1);
-      lcd1.setCursor(0, 1);
-      lcd1.print("L=");
-      lcd1.print(fltLv, 1);
-    }  // L-Float, 2nd line
+    // else {
+    //   dtostrf(fltLv, 7, 1, st1);
+    //   lcd1.setCursor(0, 1);
+    //   lcd1.print("L=");
+    //   lcd1.print(fltLv, 1);
+    // }  // L-Float, 2nd line
 
-    if (ldig1 == 0) {
-      GUI_DisNum(100, 130, lint3, &Font16, WHITE, BROWN);  // 'l', 2nd line,integert
-      lcd1.setCursor(8, 1);
-      lcd1.print("            ");
-      lcd1.setCursor(8, 1);
-      lcd1.print("l=");
-      lcd1.print(lint3);
-    }  // 'erase chars.8~19,line 1.l'- integer,, 2nd line
-    else {
-      dtostrf(fltlv, 7, 1, st1);
-      GUI_DisString_EN(100, 130, &st1[0], &Font16, WHITE, BROWN);  // 'l', 2nd line,float
-      lcd1.setCursor(8, 1);
-      lcd1.print("            ");
-      lcd1.setCursor(8, 1);
-      lcd1.print("l=");
-      lcd1.print(fltlv, 1);
-    }  // erase chars.8~19,line 1
+    // if (ldig1 == 0) {
+    //   GUI_DisNum(100, 130, lint3, &Font16, WHITE, BROWN);  // 'l', 2nd line,integert
+    //   lcd1.setCursor(8, 1);
+    //   lcd1.print("            ");
+    //   lcd1.setCursor(8, 1);
+    //   lcd1.print("l=");
+    //   lcd1.print(lint3);
+    // }  // 'erase chars.8~19,line 1.l'- integer,, 2nd line
+    // else {
+    //   dtostrf(fltlv, 7, 1, st1);
+    //   GUI_DisString_EN(100, 130, &st1[0], &Font16, WHITE, BROWN);  // 'l', 2nd line,float
+    //   lcd1.setCursor(8, 1);
+    //   lcd1.print("            ");
+    //   lcd1.setCursor(8, 1);
+    //   lcd1.print("l=");
+    //   lcd1.print(fltlv, 1);
+    // }  // erase chars.8~19,line 1
     dtostrf(Kv[LSpcN2], 7, 2, st1);
-    GUI_DisString_EN(150, 130, &st1[0], &Font16, WHITE, BROWN);  //Kv(Graphic LCD
-    lcd1.setCursor(0, 2);
-    lcd1.print("                    ");  // erase entire line-2
+    //GUI_DisString_EN(150, 130, &st1[0], &Font16, WHITE, BROWN);  //Kv(Graphic LCD
+    // lcd1.setCursor(0, 2);
+    // lcd1.print("                    ");  // erase entire line-2
 
-    lcd1.setCursor(0, 2);
-    lcd1.print("K=");
-    lcd1.print(Kvt, 2);  // Kv,  line-2
+    // lcd1.setCursor(0, 2);
+    // lcd1.print("K=");
+    // lcd1.print(Kvt, 2);  // Kv,  line-2
   }
   //-------- Wenner, below--------------------------------------------------------
   if (Surv_meth == 2)  //---- Wenner------
@@ -1146,7 +880,7 @@ void Show_LlK(void) {
     lcd1.setCursor(0, 2); lcd1.print("K= ");
   }      // "Sr No" at (0,0), "L=" & "l=" at (0,1) &(11,1) & "K=" at (0,2)
        */
-    GUI_DisNum(10, 130, LSpcN2 + 1, &Font16, WHITE, BROWN);  //lcd1.setCursor(8, 0);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); // Srl. No,.1st line
+    //GUI_DisNum(10, 130, LSpcN2 + 1, &Font16, WHITE, BROWN);  //lcd1.setCursor(8, 0);lcd1.print("Sp"); lcd1.print(LSpcN2 + 1); // Srl. No,.1st line
     lcd1.setCursor(0, 0);
     lcd1.print("F2");
     lcd1.print(" Rd");
@@ -1156,21 +890,21 @@ void Show_LlK(void) {
     else lcd1.print(LSpcN2);  // //F6h is 'Sigma',4,Rd,Sp
                               //'Sigma'4,Reading no. & Spacing no (1~N numbering)
 
-    GUI_DrawRectangle(10, 130, 70 + 240, 130 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase earlier Graphics screen
+    //GUI_DrawRectangle(10, 130, 70 + 240, 130 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase earlier Graphics screen
     //--------------------------Next: L= at (0,1), l= at (6,1), K= at (11,1)------------------------------------
-    if (Ldig1 == 0) {
-      GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
-      lcd1.setCursor(0, 1);
-      lcd1.print("a=");
-      lcd1.print(Lint3);
-    }  // L integer, 2nd line
+    // if (Ldig1 == 0) {
+    //   GUI_DisNum(50, 130, Lint3, &Font16, WHITE, BROWN);
+    //   lcd1.setCursor(0, 1);
+    //   lcd1.print("a=");
+    //   lcd1.print(Lint3);
+    // }  // L integer, 2nd line
 
-    else {
-      dtostrf(fltLv, 7, 1, st1);
-      lcd1.setCursor(0, 1);
-      lcd1.print("a=");
-      lcd1.print(fltLv, 1);
-    }  // L-Float, 2nd line
+    // else {
+    //   dtostrf(fltLv, 7, 1, st1);
+    //   lcd1.setCursor(0, 1);
+    //   lcd1.print("a=");
+    //   lcd1.print(fltLv, 1);
+    // }  // L-Float, 2nd line
        /*
   if (ldig1 == 0)   {
     GUI_DisNum (100, 130 , lint3, &Font16, WHITE, BROWN);  // 'l', 2nd line,integert
@@ -1180,13 +914,13 @@ void Show_LlK(void) {
      lcd1.setCursor(8, 1); lcd1.print("            "); lcd1.setCursor(8, 1);lcd1.print("l="); lcd1.print(fltlv, 1);}  // erase chars.8~19,line 1
   dtostrf (Kv[LSpcN2], 7, 2, st1);  GUI_DisString_EN (150, 130 , &st1[0], &Font16, WHITE, BROWN); //Kv(Graphic LCD
                   */
-    lcd1.setCursor(0, 2);
-    lcd1.print("                    ");
-    lcd1.setCursor(5, 2);
-    lcd1.print("Wenner");  // erase entire line-2
-    lcd1.setCursor(11, 1);
-    lcd1.print("K=");
-    lcd1.print(Kvt, 2);  // Kv,  line-1
+    // lcd1.setCursor(0, 2);
+    // lcd1.print("                    ");
+    // lcd1.setCursor(5, 2);
+    // lcd1.print("Wenner");  // erase entire line-2
+    // lcd1.setCursor(11, 1);
+    // lcd1.print("K=");
+    // lcd1.print(Kvt, 2);  // Kv,  line-1
   }
   //.......................................Wenner--end............................
 }
@@ -1217,15 +951,15 @@ void calc_Res() {
   fact2 = tenf[Recv_Buff1[5] - 1];
   fact3 = 5.0 / Gain[Recv_Buff1[7]];
   fact4 = 4.9883 / 100;
-  GUI_DrawRectangle(10, 150, 420, 150 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect {resistance =  */fact1,2,3
+  //GUI_DrawRectangle(10, 150, 420, 150 + 16, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // erase rect {resistance =  */fact1,2,3
   /*
     GUI_DisNum (10,150 ,ln8, &Font16, WHITE,BROWN); dtostrf (fact1, 8, 4, st1);GUI_DisString_EN (10+40, 150 , &st1[0], &Font16, Colr[7], BROWN); // fact1 = bytes[4,3].[2]
     dtostrf (fact2, 3, 1, st1);GUI_DisString_EN (50+110, 150 , &st1[0], &Font16, Colr[7], BROWN);  // fact2 = 1/10/100
     dtostrf (fact3, 5, 1, st1);GUI_DisString_EN (140+100, 150 , &st1[0], &Font16, Colr[7], BROWN);  //  fact3 = 5.0 /actual gain
   */
   dtostrf(fact4, 8, 5, st1);
-  GUI_DisString_EN(240, 150, &st1[0], &Font16, Colr[7], BROWN);  //  fact4 = 0.
-  GUI_DisNum(240 + 100, 150, F_cnt, &Font16, WHITE, BROWN);
+  // GUI_DisString_EN(240, 150, &st1[0], &Font16, Colr[7], BROWN);  //  fact4 = 0.
+  // GUI_DisNum(240 + 100, 150, F_cnt, &Font16, WHITE, BROWN);
   if (Surv_meth == 1)  // Schlumberger
   {
     LlpSz = 2 * IntSz;
@@ -1333,17 +1067,17 @@ void calc_Res() {
   }
   // first,tEA -->to correct Record in EAd6~EAd7.then save int'Reading no.' then L (10*actual value), & finally  float no.'tRho' (Resistivity)
   //...............................................then,......................................................................................
-  dtostrf(tRes, 9, 2, st1);  //
-  GUI_DisString_EN(210, 130, &st1[0], &Font12, Colr[7], BLUE);
-  GUI_DisString_EN(130 + xn1 + 70, 180, "m-ohm", &Font12, Colr[7], BLUE);  // "milli-ohm"
+  // dtostrf(tRes, 9, 2, st1);  //
+  // GUI_DisString_EN(210, 130, &st1[0], &Font12, Colr[7], BLUE);
+  // GUI_DisString_EN(130 + xn1 + 70, 180, "m-ohm", &Font12, Colr[7], BLUE);  // "milli-ohm"
 
-  dtostrf(tRho, 9, 2, st1);  //
-  GUI_DisString_EN(280, 130, &st1[0], &Font12, Colr[7], BLUE);
-  GUI_DisString_EN(290 + 108, 130, "ohm-m", &Font12, Colr[7], BLUE);  // "milli-ohm"
-  // For testing:--LSpcN++not done; update Last Spacing No
-  GUI_DisNum(255 + xn1, 180, LSpcN2, &Font12, Colr[7], BLUE);
-  GUI_DisNum(255 + xn1 + (5 * 8), 180, LRdSr2, &Font12, Colr[7], BLUE);  //  no.of readings
-                                                                         //-----------------Next:-- Res. & Rho written on 20x4 Lcd-------------------------------------------------------                                           //    */
+  // dtostrf(tRho, 9, 2, st1);  //
+  // GUI_DisString_EN(280, 130, &st1[0], &Font12, Colr[7], BLUE);
+  // GUI_DisString_EN(290 + 108, 130, "ohm-m", &Font12, Colr[7], BLUE);  // "milli-ohm"
+  // // For testing:--LSpcN++not done; update Last Spacing No
+  // GUI_DisNum(255 + xn1, 180, LSpcN2, &Font12, Colr[7], BLUE);
+  // GUI_DisNum(255 + xn1 + (5 * 8), 180, LRdSr2, &Font12, Colr[7], BLUE);  //  no.of readings
+                                                                          //-----------------Next:-- Res. & Rho written on 20x4 Lcd-------------------------------------------------------                                           //    */
                                                                          //-------------------------------now show Resistace on line-1---------------------------------
   if (Cycl_Sw == 1)                                                      // 1-cycle
   {
@@ -1812,20 +1546,10 @@ void Recv_Serial2() {  //j3a=0 to be done at initialization time          xv1=60
 
     ch10 = Serial2.read();  //Recv_Buff1[j3a] = ch10; j3a++;
 
-    // to serial monitor ?
-    //......... now print the character on LCD Screen (j=0~29 means a~z at x2,y2 ...Before printing, erase rect. if necessary..................
-    //if (xv1 >= 400 && yv1>=218) {
-    //GUI_DrawRectangle(60, yv1, 400, 218, Colr[7], DRAW_FULL, DOT_PIXEL_DFT);  // show  lines withou erasing    Erase 60~400,height=17 if xv1>=400
-    //xv1 = 60;
-    //}
     if (xv1 >= 400) {
       yv1 += 16;
       xv1 = 0;
     }
-    // ---------the following 2 lines are suppressed ------------------------------------------
-    //         if  ( (ch10 >= 0x61 &&  ch10<= 0x7A) || (ch10 >= 0x41 &&  ch10<= 0x5A) )   // if ch10= 'a'~'z' or 'A'~'Z'
-    //{GUI_DisChar (xv1,yv1, ch10 , &Font16,WHITE, BROWN) ;xv1+=13;}   // print a letter from a~z or A~Z, at xv1(=60~400max),yv1=50. then xv1+=13(advance cursor)
-    //..........................................................................................
     Serial.print(ch10);
     RcBf_R1[tn1] = ch10;
     if (t_transf == 1) {
@@ -1871,50 +1595,7 @@ void Recv_Serial2() {  //j3a=0 to be done at initialization time          xv1=60
         calc_Batt();
         if (Range_Sw != 1 && Fpr != 'Q') Show_LlK();
       }  // do not call Show_LlK ,if in Batt position,, or in 'Test'mode. show 15 bytes, expected to be 01,0Fh,.....upto FFh,FFh
-         //call 'Show_Llk' if not in Batt posn. & not in 'Test' mode)
-         //  { (show Batt. Voltage & L,l,K values GUI_DisNum (30,180,tn1, &Font12, Colr[7],BLACK);
-      //.................................................................................................................
-      if (tn1 == 21) curr_Status();
-      if (tn1 == 21) {
-        tn2 = 0;
-        tn3 = 0;
-        t_transf = 1;
-      }  // tn2 will go from 0 to 14 (15 bytes)
-      // now, t_transf==1 means that tn2 will start increasing
-      if (Cycl_Sw == 1 && (tn1 == 35 || tn1 == 36)) {
-        xn1 = 0;
-        PrCycl_No = 0;
-        calc_Res();
-        tn1 = 0;
-      }  //  && means 1-cycle only. after 'calc_Res' make tn1=0;
-
-      if (Cycl_Sw == 2 || Cycl_Sw == 3 || Cycl_Sw == 4) {  //4/16/64 cycles
-        if (tn2 == 15) {
-          xn1 = 0;
-          PrCycl_No = 1;
-          calc_Res();
-        }  //Res.-1  (tn1 == 35)
-
-        if (tn2 == 30) {
-          xn1 = 70;
-          PrCycl_No = 2;
-          calc_Res();
-        }  //Res.-2     tn1 == 50
-
-        if (tn2 == 45) {
-          xn1 = 140;
-          PrCycl_No = 3;
-          calc_Res();
-        }  // Res.-3   tn1 == 65
-
-        if (tn2 == 60) {
-          xn1 = 210;
-          PrCycl_No = 4;
-          calc_Res();
-          tn1 = 0;
-        }  //  Res.-4 tn1 == 81 Last  Resistance value received. So make tn1=0;
-
-      }  // end of 'if Cycl_Sw==1/2/3/4
+ 
     }    //end of 'if 2 bytes=FFh,FFh
     // GUI_DisString_EN (100, 90+90 , &st1[0], &Font12, Colr[7], BLUE);}
     // Removed---calc_Res();
@@ -3679,32 +3360,32 @@ void entry_fnc_H() {  // Survey mode
   tn2 = 0;
   t_transf = 0;  // this means no. of chars. received at Serial2=0. This may help
   lcd1.clear();
-  lcd1.setCursor(0, 0);
-  lcd1.print("F2");  // F2'Sigma',1
-  lcd1.setCursor(3, 0);
-  lcd1.print("Rd ");
-  lcd1.print(LRdSr2 + 1);
-  if (Surv_meth == 1) lcd1.print(" ");
-  if (Surv_meth == 2) lcd1.print(" ");
-  lcd1.print(" Sp=");
-  if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
-  else lcd1.print(LSpcN2);
-  if ((LSpcN2 + 1) <= 9) lcd1.print(" ");  // line-0, reading no.,Spacing no. .
+  //lcd1.setCursor(0, 0);
+  //lcd1.print("F2");  // F2'Sigma',1
+  //lcd1.setCursor(3, 0);
+  //lcd1.print("Rd ");
+  // lcd1.print(LRdSr2 + 1);
+  // if (Surv_meth == 1) lcd1.print(" ");
+  // if (Surv_meth == 2) lcd1.print(" ");
+  // lcd1.print(" Sp=");
+  // if (freezeSP == 0) lcd1.print(LSpcN2 + 1);
+  // else lcd1.print(LSpcN2);
+  // if ((LSpcN2 + 1) <= 9) lcd1.print(" ");  // line-0, reading no.,Spacing no. .
   lcd1.setCursor(12, 0);
   lcd1.print(" Srv ");
   lcd1.print(Srv_No);  //
   lcd1.setCursor(10, 2);
-  if (Surv_meth == 1) lcd1.print(" Schlumb ");
-  if (Surv_meth == 2) lcd1.print(" Wenner ");
-  if (Surv_meth == 3) lcd1.print("Dip-Dipo ");  // show Schlum/wenner/Dipo-Dipo at line-2, column-10
-  lcd1.print("Sp2=");                           // why  SP & SP2 ?
-  if (freezeSP == 0) Show_LlK2(LSpcN2);
-  else Show_LlK2(LSpcN2 - 1);
-  lcd1.setCursor(0, 2);
-  lcd1.print("K= ?");  //
-                       // Sp++  blocked by key 2 only & enabled by key 3 only
-  lcd1.setCursor(1, 3);
-  lcd1.print("-press Measur(9)");  // this message "-press Measure-" wil get erased when 'Batt' voltage is received
+  //if (Surv_meth == 1) lcd1.print(" Schlumb ");
+  //if (Surv_meth == 2) lcd1.print(" Wenner ");
+  //if (Surv_meth == 3) lcd1.print("Dip-Dipo ");  // show Schlum/wenner/Dipo-Dipo at line-2, column-10
+  //lcd1.print("Sp2=");                           // why  SP & SP2 ?
+  //if (freezeSP == 0) Show_LlK2(LSpcN2);
+  //else Show_LlK2(LSpcN2 - 1);
+  // lcd1.setCursor(0, 2);
+  // lcd1.print("K= ?");  //
+  //                      // Sp++  blocked by key 2 only & enabled by key 3 only
+  // lcd1.setCursor(1, 3);
+  // lcd1.print("-press Measur(9)");  // this message "-press Measure-" wil get erased when 'Batt' voltage is received
 
   //EEPROM.get(tEA, Lint1);  tEA += 2; EEPROM.get(tEA, lint1);
   //Ldig1=L%10; Lint3=L/10; ldig1=l%10; lint3=l/10;  fltL=(float)L/10; fltl=(float)l/10; Kv=ScalcK(fltL,fltl);
@@ -5068,252 +4749,6 @@ void Get_GPS2(void) {  // 1{
 }  // 1}
    //*/
 //---------------------------------------------------------------------------------
-
-
-//--------------------------------------------------------------------------------------
-//   Get_GPS() --  get & display GPS & Date,Time
-//-----------------------------------------------------------------
-/*
-void Get_GPS(void) {
-  unsigned int x1, y1;  // {1
-  // if ( Kbkaz>= 'a' && Kbkaz<='z')
-  //{          // 1.5 get & Show GPS only if any key 'a' ~ 'z' has been taken
-  while (Serial1.available())          //while
-  {                                    //2
-    if (gps.encode(Serial1.read())) {  //{3
-      //--------------------------'try new metods'----- (Ref. Shankaran's printout, 5/oct/2019)--------
-      //lat= gps.location.lat();   lon= gps.location.lng();  ltg0 = lat; ltg1 = lon;   //ltgo--latitude,ltg1--longitude
-      // compiler does not recognize methods .location.lat() nor  .location.lng()
-      // .....................................................................................................
-      gps.f_get_position(&lat, &lon);
-      ltg0 = lat;
-      ltg1 = lon;  // 2 new variables for 'Lattitude' & 'Longitude'
-      ldg0 = ltg0 / 1;
-      frdg0 = ltg0 - (float)(ldg0);
-      lx0 = frdg0 * 60.0;
-      lmin0 = lx0 / 1;
-      frmin0 = lx0 - (float)(lmin0);
-      lsec0 = frmin0 * 60.0;  // for Lattitude
-      ldg1 = ltg1 / 1;
-      frdg1 = ltg1 - (float)(ldg1);
-      lx1 = frdg1 * 60.0;
-      lmin1 = lx1 / 1;
-      frmin1 = lx1 - (float)(lmin1);
-      lsec1 = frmin1 * 60.0;  // for Longitude
-      if (LnNo == 1) {
-        Rlsec0 = lsec0;
-        Rlsec1 = lsec1;
-      }
-      err0 = lsec0 - Rlsec0;
-      err1 = lsec1 - Rlsec1;
-      //GUI_DrawRectangle(20-1, 45,  460,45+13 , YELLOW, DRAW_FULL, DOT_PIXEL_DFT);// Earlier erase Rect.440x13 (now,small rects. 24x13)
-      GUI_DisString_EN(10, 45, "Lat: ", &Font12, WHITE, BLUE);  // lcd1.clear();   lcd1.setCursor(1, 0); lcd1.print("Lat: ");
-      if (ldg0 != ldg0L && LnNo >= 1) {
-        GUI_DrawRectangle(60 - 1, 45, 60 + 24, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);
-        GUI_DisNum(60, 45, ldg0, &Font16, YELLOW, BLUE);  // first erase 2 Degrees
-      }                                                   // lcd1.print("/");
-
-      if (lmin0 != lmin0L && LnNo >= 1) {
-        GUI_DrawRectangle(90 - 1, 45, 90 + 24, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  //Minutes (Lattit.)
-        GUI_DisNum(90, 45, lmin0, &Font16, YELLOW, BLUE);
-      }
-      dtostrf(lsec0, 5, 2, st1);  // Seconds
-      GUI_DrawRectangle(120, 45, 120 + 60, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);
-      GUI_DisString_EN(120, 45, &st1[0], &Font16, YELLOW, BLUE);  //erase & print,lsec0,err0
-      dtostrf(err0, 5, 2, st1);                                   // err0,Seconds
-      GUI_DrawRectangle(185, 45, 185 + 60, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);
-      GUI_DisString_EN(185, 45, &st1[0], &Font16, YELLOW, BLUE);  //
-                                                                  //lcd1.setCursor(0,1); lcd1.print("Latt:"); lcd1.print(ldg0);lcd1.print(" ");lcd1.print(lmin0); lcd1.print(" ");lcd1.print(lsec0,1); //Latt:deg,min,sec
-                                                                  //lcd1.setCursor(0,2); lcd1.print("Long:"); lcd1.print(ldg1);lcd1.print(" ");lcd1.print(lmin1); lcd1.print(" ");lcd1.print(lsec1,1); //Long:deg,min,sec
-      if (LnNo == 0) {
-        GUI_DisNum(60, 45, ldg0, &Font16, YELLOW, BLUE);  // Degrees & Minutes (initialization)(Latt.)
-        GUI_DisNum(95, 45, lmin0, &Font16, YELLOW, BLUE);
-      }
-
-      //  next: Lattitude & Longitude, (suppressed: 8/Feb/2023)
-      //   /*
-      Serial.print("Pos: ");
-      Serial.print("Latt: ");
-      Serial.print(ldg0);
-      Serial.print(" ");
-      Serial.print(lmin0);
-      Serial.print(" ");
-      Serial.print(lsec0, 2);
-      Serial.print(" ");
-      Serial.print(err0, 2);
-      // next: longitude
-      Serial.print("  Long: ");
-      Serial.print(ldg1);
-      Serial.print(" ");
-      Serial.print(lmin1);
-      Serial.print(" ");
-      Serial.print(lsec1, 2);
-      Serial.print(" ");
-      Serial.print(err1, 2);
-      Serial.print(" ");
-      //  
-      GUI_DisString_EN(240, 45, "Long: ", &Font12, WHITE, BLUE);
-      if (ldg1 != ldg1L && LnNo >= 1) {
-        GUI_DrawRectangle(280, 45, 280 + 24, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // Degrees(Long.)
-        GUI_DisNum(280, 45, ldg1, &Font16, YELLOW, BLUE);
-      }
-      if (lmin1 != lmin1L && LnNo >= 1) {
-        GUI_DrawRectangle(305, 45, 303 + 24, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  //Minutes
-        GUI_DisNum(303, 45, lmin1, &Font16, YELLOW, BLUE);
-      }
-      dtostrf(lsec1, 5, 2, st1);  // Seconds
-      GUI_DrawRectangle(330, 45, 330 + 60, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);
-      GUI_DisString_EN(330, 45, &st1[0], &Font16, YELLOW, BLUE);  // erase & print,lsec1,err1
-      dtostrf(err1, 5, 2, st1);                                   // err1,Seconds
-      GUI_DrawRectangle(400, 45, 400 + 60, 45 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);
-      GUI_DisString_EN(400, 45, &st1[0], &Font16, YELLOW, BLUE);  // erase & print
-      if (LnNo == 0) {
-        GUI_DisNum(280, 45, ldg1, &Font16, YELLOW, BLUE);  // Degrees & Minutes (initialization) (Long.)
-        GUI_DisNum(305, 45, lmin1, &Font16, YELLOW, BLUE);
-      }
-      // next: date & time
-      gps.crack_datetime(&Yr, &Mn, &Dte, &Hr, &mint, &Scnd, &DeciSec, &f_age);  // get date & time
-      mint += 30;
-      if (mint >= 60) {
-        mint -= 60;
-        Cr = 1;
-      } else Cr = 0;
-      Hr += 5 + Cr;
-      ldg0L = ldg0;
-      ldg1L = ldg1;
-      lmin0L = lmin0;
-      lmin1L = lmin1;
-      LAltit = gps.altitude();
-      vr4 = (float)LAltit / 100;  // update 'Last' values
-
-      //--------------------------following 2 lines for writing data on Serial monitor- date & time---suppresed: 8/Feb/2023----------------------------------------
-      //  /*
-      Serial.print(Dte);
-      Serial.print("/");
-      if (Mn == 2) Serial.print("Feb");
-      if (Mn == 3) Serial.print("March");
-      Serial.print("/");
-      Serial.print(Yr);
-      Serial.print("--");  // date
-      Serial.print(Hr);
-      Serial.print(":");
-      Serial.print(mint);
-      Serial.print(":");
-      Serial.print(Scnd);
-      Serial.print(" ");    // time & NL
-      Serial.println(vr4);  //  print Alitude (float) & New line
-                            //   
-      //-----------------------------lcd1 statements--------------------------
-      lcd1.setCursor(0, 0); lcd1.print("Date:"); lcd1.print(Dte); lcd1.print("/"); lcd1.print(Mn); lcd1.print("/"); lcd1.print(Yr); // dd/mm/yyyy
-        lcd1.setCursor(0, 1); lcd1.print("Time:"); lcd1.print(Hr); lcd1.print(":"); lcd1.print(mint); lcd1.print(":"); lcd1.print(Scnd); // hh:mm:ss
-               lcd1.setCursor(14, 1);
-               lcd1.print("A");  //Altitude
-               vr4 = (float)LAltit / 100;
-                 lcd1.print(vr4,0);   lcd1.print("m.");  //Laltit is in cm.       
-        
-        //-----------now Latitude & Longitude---lines 2 & 3----------------------------------------
-        lcd1.setCursor(0,2); lcd1.print("Lat:"); lcd1.print(ldg0);lcd1.print(" ");lcd1.print(lmin0); lcd1.print(" "); lcd1.print(lsec0,1); //
-                      lcd1.print('N');//Latitude:deg,min,sec & North
-        lcd1.setCursor(0,3); lcd1.print("Long:"); lcd1.print(ldg1);lcd1.print(" ");lcd1.print(lmin1); lcd1.print(" ");lcd1.print(lsec1,1); //
-                   lcd1.print('E');
-      //....................................end of lcd1 statement..........
-      //..........................................................................................................................
-      //Serial.println(gps.altitude() );   // Altitude in meters
-      //GUI_DrawRectangle(20-1, 65,  460,65+13 , YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // earlier, erase 440x13 rect.
-      // print unconditionally, when LnNo==0. print date,only if it has changed since the last sample time
-      if (Dte != DteL && LnNo >= 1) {
-        GUI_DrawRectangle(20 - 1, 65, 20 + 24, 65 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // erase 2 digits rect. 24x13
-        GUI_DisNum(20, 65, Dte, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(45, 65, "/", &Font16, YELLOW, BLUE);
-        //-----------------------------printing
-        //lcd1.setCursor(3, 0); lcd1.print(Dte); lcd1.print("/");  // date
-      }  //  date moved to (4,0)dd/
-      //
-      if (Mn != MnL && LnNo >= 1) {
-        GUI_DrawRectangle(57 - 1, 65, 57 + 24, 65 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // erase 2 digits
-        GUI_DisNum(57, 65, Mn, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(82, 65, "/", &Font16, YELLOW, BLUE);
-        //------------------------------month 'Mn'--moved to (7,0)
-        //lcd1.setCursor(6, 0); lcd1.print(Mn); lcd1.print("/"); // month
-      }  // mm/
-
-      if (Yr != YrL && LnNo >= 1) {
-        GUI_DrawRectangle(94 - 1, 65, 94 + 48, 65 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // erase 4 digits of year
-        //------------------------------printing of year halted temporarily 21/oct/2022 (on 20x4 LCD)
-        GUI_DisNum(94, 65, Yr, &Font16, YELLOW, BLUE);
-      }  //printing of year temporarily stopped [ lcd1.setCursor(6, 0); lcd1.print(Yr);] // yyyy
-      if (Hr != HrL && LnNo >= 1) {
-        GUI_DrawRectangle(160 - 1, 65, 160 + 24, 65 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // erase 2 digits
-        GUI_DisNum(160, 65, Hr, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(185, 65, ":", &Font16, YELLOW, BLUE);
-        //lcd1.setCursor(11, 0); lcd1.print(Hr); lcd1.print(":");  // Hour
-      }  //hh:
-
-      if (mint != mintL && LnNo >= 1) {
-        GUI_DrawRectangle(197 - 1, 65, 197 + 24, 65 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // erase 2 digits
-        GUI_DisNum(197, 65, mint, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(222, 65, ":", &Font16, YELLOW, BLUE);
-        // lcd1.setCursor(14, 0); lcd1.print(mint); lcd1.print(":");
-      }  // mm:
-
-      if (Scnd != ScndL && LnNo >= 1) {
-        GUI_DrawRectangle(234 - 1, 65, 234 + 24, 65 + 13, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  // erase 2 digits
-        GUI_DisNum(234, 65, Scnd, &Font16, YELLOW, BLUE);                                     // lcd1.setCursor(17, 0); lcd1.print(Scnd); lcd1.print(" ");
-      }                                                                                       // ss ('blank' at (19,0)
-
-      if (LnNo == 0) {
-        GUI_DisNum(20, 65, Dte, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(45, 65, "/", &Font16, YELLOW, BLUE);  // date
-        GUI_DisNum(57, 65, Mn, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(82, 65, "/", &Font16, YELLOW, BLUE);  // month
-        GUI_DisNum(94, 65, Yr, &Font16, YELLOW, BLUE);
-        GUI_DisNum(160, 65, Hr, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(185, 65, ":", &Font16, YELLOW, BLUE);  // year & hours
-        GUI_DisNum(197, 65, mint, &Font16, YELLOW, BLUE);
-        GUI_DisString_EN(222, 65, ":", &Font16, YELLOW, BLUE);  // minutes (Seconds is automatic)
-                                                                /*
-        lcd1.setCursor(2, 0); lcd1.print(" "); lcd1.print(Dte); lcd1.print("/"); lcd1.print(Mn); lcd1.print("/"); lcd1.print("  "); // dd/mm/yyyy[], lcd1.print(Yr); skip year)
-        lcd1.setCursor(10, 0); lcd1.print(" "); lcd1.print(Hr); lcd1.print(":"); //  lcd1.setCursor(14, 0);
-        lcd1.print(mint); lcd1.print(":");  lcd1.print(Scnd); lcd1.print(" ");      //Hours  'lcd1.setCursor(17, 0);'--because hr,minute & sec. can be 1digit
-        //-----------now Lattitude & Longitude-------------------------------------------
-        lcd1.setCursor(0,1); lcd1.print("Latt:"); lcd1.print(ldg0);lcd1.print(" ");lcd1.print(lmin0); lcd1.print(" ");lcd1.print(lsec0,1); //Latt:deg,min,sec
-        lcd1.setCursor(0,2); lcd1.print("Long:"); lcd1.print(ldg1);lcd1.print(" ");lcd1.print(lmin1); lcd1.print(" ");lcd1.print(lsec1,1); //Long:deg,min,sec
-           
-        //........................................................................................
-      }  // all date,month,year, hours,minutes,Seconds done
-      LnNo++;
-      tLn++;
-      if (tLn >= 5) {
-        tLn = 0;  // print sr no. of line
-        Serial.println(" ");
-        Serial.print(LnNo);
-        Serial.print(" ");
-      } else {
-        Serial.print(tLn);
-        Serial.print(" ");
-      }
-
-      DteL = Dte;
-      MnL = Mn;
-      YrL = Yr;
-      HrL = Hr;
-      mintL = mint;
-      ScndL = Scnd;  // update 'Last' values
-      //  ----- Try Altitude----
-
-      // Next: Altitude
-      GUI_DisString_EN(265, 65, "Alt.", &Font16, YELLOW, BLUE);                         //
-      GUI_DrawRectangle(330, 65, 330 + 75, 65 + 16, YELLOW, DRAW_FULL, DOT_PIXEL_DFT);  //
-      GUI_DisNum(330, 65, LAltit, &Font16, YELLOW, BLUE);                               //  some error in Altitude
-      //print_float(gps.f_altitude(),TinyGPS::GPS_INVALID_F_ALTITUDE,8,2);
-    }  //}3
-       // entry_fnc_G();  // show Latt,Long,Date,time,Altitude
-  }    // 2}
-  //}   // 1.5
-  //Kbkaz=0;  //  action on a key 'a~z' has been taken
-}  //  }1  end of Get_GPS
-  */
-// --- - - - - - - - - - - end of Get_GPS- - - - - - - - - - - --  - - - -- - - - - - - - -- -
 
 //*******************************************************************************
 //  function:
