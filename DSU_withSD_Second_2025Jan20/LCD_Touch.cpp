@@ -338,7 +338,7 @@ void calc_Batt() {
   BattV = (float)ln8 / 100.0;
   dtostrf(BattV, 5, 2, st1);                                                         // Batt Volt e.g. 12.83, RcBf_R1[7] expected to be 0
    lcd1.setCursor(10, 0);
-  lcd1.print("BY=");
+  lcd1.print("BX=");
   lcd1.print(BattV, 2);  // now,'Sigma',1lcd1.clear();show at (13,0) B=12.68
   lcd1.setCursor(0, 3);
   lcd1.print("                   ");  // erase line-3 (press measure)
